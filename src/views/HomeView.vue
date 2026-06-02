@@ -49,12 +49,13 @@ useGlobalShortcuts({
   },
 })
 
-onMounted(async () => {
-  if (settings.initialized && hasFolder.value) {
-    await posts.refresh()
-  }
+onMounted(() => {
   document.addEventListener('mousedown', onDocClick)
   document.addEventListener('keydown', onPickerKey)
+})
+
+watch(hasFolder, async (has) => {
+  if (has) await posts.refresh()
 })
 
 onBeforeUnmount(() => {
@@ -203,14 +204,15 @@ function onPickerKey(e: KeyboardEvent) {
           <h1 class="list-title">Posts</h1>
           <div class="list-actions">
             <button
-              class="btn btn-ghost btn-icon"
+              class="btn btn-ghost toolbar-shortcut"
               :disabled="posts.loading"
               data-testid="refresh-btn"
-              :title="posts.loading ? 'Loading…' : 'Refresh'"
+              :title="posts.loading ? 'Loading…' : shortcutTitle('Refresh', SHORTCUT.refresh)"
               aria-label="Refresh"
               @click="onRefresh"
             >
               <AppIcon name="refresh" />
+              <Shortcut :keys="SHORTCUT.refresh" />
             </button>
             <button
               class="btn btn-ghost toolbar-shortcut"

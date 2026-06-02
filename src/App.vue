@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { onMounted } from 'vue'
 import { useSettingsStore } from '@/stores/settings'
+import { usePostsStore } from '@/stores/posts'
 import { useGlobalShortcuts } from '@/lib/useGlobalShortcuts'
 import { useErrorToasts } from '@/lib/useErrorToasts'
 import { useTheme } from '@/lib/theme'
@@ -11,7 +12,12 @@ import ShortcutsModal from '@/components/shell/ShortcutsModal.vue'
 import Toaster from '@/components/shell/ToastStack.vue'
 
 const settings = useSettingsStore()
-useGlobalShortcuts()
+const posts = usePostsStore()
+useGlobalShortcuts({
+  onRefresh: () => {
+    void posts.refresh()
+  },
+})
 useErrorToasts()
 useTheme()
 

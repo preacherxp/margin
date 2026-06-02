@@ -5,6 +5,7 @@ import { matchesShortcut, renderShortcut } from '@/lib/shortcuts'
 export interface GlobalShortcutHandlers {
   onNewPost?: () => void
   onSaveNow?: () => void
+  onRefresh?: () => void
   onShowShortcuts?: () => void
   onEscape?: () => boolean
 }
@@ -20,6 +21,7 @@ export const SHORTCUTS: ShortcutDef[] = [
   { combo: 'mod+n', description: 'New Post', scope: 'home' },
   { combo: 'mod+s', description: 'Save Now', scope: 'editor' },
   { combo: 'mod+/', description: 'Show Keyboard Shortcuts', scope: 'global' },
+  { combo: 'mod+r', description: 'Refresh Posts', scope: 'global' },
   { combo: 'esc', description: 'Close Panel / Dismiss Toast', scope: 'global' },
 ]
 
@@ -28,7 +30,8 @@ export const SHORTCUT = {
   newPost: SHORTCUTS[1]!.combo,
   saveNow: SHORTCUTS[2]!.combo,
   shortcuts: SHORTCUTS[3]!.combo,
-  escape: SHORTCUTS[4]!.combo,
+  refresh: SHORTCUTS[4]!.combo,
+  escape: SHORTCUTS[5]!.combo,
 } as const
 
 export function shortcutLabel(combo: string): string {
@@ -96,6 +99,14 @@ function makeHandler(): (e: KeyboardEvent) => void {
         return
       }
     }
+    if (matchesShortcut(e, SHORTCUT.refresh)) {
+      const active = findActiveHandler('onRefresh')
+      if (active) {
+        e.preventDefault()
+        active.onRefresh?.()
+        return
+      }
+    }
   }
 }
 
@@ -103,7 +114,7 @@ const handlersStack: GlobalShortcutHandlers[] = []
 let rootHandler: ((e: KeyboardEvent) => void) | null = null
 const listenerOptions = { capture: true }
 
-function findActiveHandler(name: 'onNewPost' | 'onSaveNow'): GlobalShortcutHandlers | undefined {
+function findActiveHandler(name: 'onNewPost' | 'onSaveNow' | 'onRefresh'): GlobalShortcutHandlers | undefined {
   for (let i = handlersStack.length - 1; i >= 0; i -= 1) {
     if (handlersStack[i]?.[name]) return handlersStack[i]
   }
