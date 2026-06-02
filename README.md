@@ -85,7 +85,7 @@ The generated app bundle is written under `src-tauri/target/release/bundle/`.
 | `pnpm build-only` | Build only the Vite frontend. |
 | `pnpm preview` | Preview the production frontend build. |
 | `pnpm type-check` | Run `vue-tsc --build`. |
-| `pnpm lint` | Run oxlint and eslint with fixes enabled. |
+| `pnpm lint` | Run oxlint with fixes enabled. |
 | `pnpm format` | Format `src/` with oxfmt. |
 | `pnpm test:unit` | Run Vitest. |
 | `pnpm test:e2e` | Run Playwright tests. |
