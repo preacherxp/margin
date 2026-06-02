@@ -12,7 +12,7 @@ concurrency:
 
 jobs:
   web:
-    name: Web (lint, type-check, unit, e2e, build)
+    name: Web (lint, type-check, unit, build)
     runs-on: ubuntu-latest
     timeout-minutes: 20
     steps:
@@ -39,24 +39,8 @@ jobs:
       - name: Unit tests
         run: pnpm test:unit --run
 
-      - name: Install Playwright browsers
-        run: pnpm exec playwright install --with-deps chromium firefox webkit
-
       - name: Build
         run: pnpm build
-
-      - name: E2E tests
-        run: pnpm test:e2e
-        env:
-          CI: true
-
-      - name: Upload Playwright report
-        if: always()
-        uses: actions/upload-artifact@v4
-        with:
-          name: playwright-report-web
-          path: playwright-report/
-          retention-days: 7
 
       - name: Upload build artifacts
         uses: actions/upload-artifact@v4
@@ -64,49 +48,3 @@ jobs:
           name: dist-web
           path: dist/
           retention-days: 7
-
-  tauri:
-    name: Tauri (macOS build)
-    runs-on: macos-latest
-    timeout-minutes: 30
-    steps:
-      - uses: actions/checkout@v4
-
-      - uses: pnpm/action-setup@v4
-        with:
-          version: 10
-
-      - uses: actions/setup-node@v4
-        with:
-          node-version: 22
-          cache: pnpm
-
-      - name: Install Rust stable
-        uses: dtolnay/rust-toolchain@stable
-
-      - name: Cache cargo
-        uses: Swatinem/rust-cache@v2
-        with:
-          workspaces: src-tauri -> target
-
-      - name: Install dependencies
-        run: pnpm install --frozen-lockfile
-
-      - name: Build Tauri app
-        run: pnpm tauri:build
-        env:
-          # Skip signing/notarization — no secrets configured.
-          TAURI_SIGNING_PRIVATE_KEY: ""
-          TAURI_SIGNING_PRIVATE_KEY_PASSWORD: ""
-
-      - name: Upload Tauri bundles
-        if: success()
-        uses: actions/upload-artifact@v4
-        with:
-          name: tauri-bundle-macos
-          path: |
-            src-tauri/target/release/bundle/dmg/*.dmg
-            src-tauri/target/release/bundle/macos/*.app
-            src-tauri/target/release/bundle/macos-*/Margin.app
-          retention-days: 7
-          if-no-files-found: warn
