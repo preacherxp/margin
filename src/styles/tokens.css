@@ -1,0 +1,231 @@
+:root {
+  color-scheme: dark;
+
+  --brand: #503B31;
+  --bg: #0f0b08;
+  --panel: #1a1410;
+  --panel-2: #221a14;
+  --border: #2d231c;
+  --border-strong: #3d3026;
+  --text: #e7e2dc;
+  --text-muted: #9d9892;
+  --text-faint: #6e6964;
+  --accent: #C9A78A;
+  --accent-hover: #B5896A;
+  --accent-contrast: #1a120c;
+  --accent-soft: rgba(201, 167, 138, 0.15);
+  --accent-ring: rgba(201, 167, 138, 0.35);
+  --control-hover: rgba(255, 255, 255, 0.06);
+  --control-active: rgba(255, 255, 255, 0.09);
+  --danger: #e76f51;
+  --danger-soft: rgba(231, 111, 81, 0.4);
+  --danger-bg: rgba(231, 111, 81, 0.08);
+  --success: #94a373;
+  --success-soft: rgba(148, 163, 115, 0.4);
+  --warning: #e8a04a;
+  --warning-soft: rgba(232, 160, 74, 0.4);
+
+  --radius: 6px;
+  --radius-lg: 10px;
+  --gap-1: 4px;
+  --gap-2: 8px;
+  --gap-3: 12px;
+  --gap-4: 16px;
+  --gap-6: 24px;
+  --gap-8: 32px;
+
+  --font-sans: -apple-system, BlinkMacSystemFont, 'Inter', 'Segoe UI', Roboto, sans-serif;
+  --font-mono: 'JetBrains Mono', ui-monospace, 'SF Mono', Menlo, monospace;
+
+  --ease: cubic-bezier(0.4, 0, 0.2, 1);
+  --dur: 150ms;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body,
+#app {
+  height: 100%;
+  margin: 0;
+}
+
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--font-sans);
+  font-size: 14px;
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+}
+
+button {
+  font: inherit;
+  color: inherit;
+  cursor: pointer;
+}
+
+a {
+  color: var(--accent);
+  text-decoration: none;
+}
+
+a:hover {
+  text-decoration: underline;
+}
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  height: 29px;
+  padding: 0 12px;
+  border: 1px solid var(--border-strong);
+  background: var(--panel);
+  color: var(--text);
+  border-radius: var(--radius);
+  font: 500 13px/1 var(--font-sans);
+  white-space: nowrap;
+  transition:
+    background 120ms var(--ease),
+    transform 40ms var(--ease);
+}
+
+.btn:hover {
+  background: var(--control-hover);
+}
+
+.btn:active {
+  background: var(--control-active);
+  transform: scale(0.97);
+}
+
+.btn:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 3.5px var(--accent-ring);
+}
+
+.btn:disabled,
+.btn[aria-disabled='true'] {
+  opacity: 0.4;
+  pointer-events: none;
+}
+
+.btn-primary,
+.btn--primary {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: var(--accent-contrast);
+}
+
+.btn-primary:hover,
+.btn--primary:hover {
+  background: var(--accent-hover);
+  border-color: var(--accent-hover);
+}
+
+.btn-secondary,
+.btn--secondary {
+  background: var(--panel);
+  border-color: var(--border-strong);
+}
+
+.btn-ghost,
+.btn--ghost {
+  background: transparent;
+  border-color: transparent;
+  color: var(--text-muted);
+}
+
+.btn-ghost:hover,
+.btn--ghost:hover {
+  background: var(--control-hover);
+  color: var(--text);
+}
+
+.btn-icon,
+.btn--icon {
+  width: 29px;
+  padding: 0;
+}
+
+.btn svg {
+  width: 16px;
+  height: 16px;
+  flex: 0 0 16px;
+  stroke-width: 1.65;
+}
+
+.shortcut {
+  color: var(--text-faint);
+  font-size: 0.85em;
+  letter-spacing: 0.04em;
+  line-height: 1;
+}
+
+.key,
+kbd.key {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 18px;
+  min-height: 18px;
+  padding: 1px 5px;
+  font-family: var(--font-sans);
+  font-weight: 500;
+  font-size: 11px;
+  background: var(--panel-2);
+  color: var(--text-muted);
+  border: 1px solid var(--border-strong);
+  border-radius: 5px;
+  vertical-align: middle;
+}
+
+.muted {
+  color: var(--text-muted);
+}
+
+.faint {
+  color: var(--text-faint);
+}
+
+/* Light theme — warm cream surfaces, same brand identity. */
+[data-theme='light'] {
+  color-scheme: light;
+
+  --bg: #faf6f1;
+  --panel: #ffffff;
+  --panel-2: #f3ece4;
+  --border: #e6dccf;
+  --border-strong: #cdc1b1;
+  --text: #2a201a;
+  --text-muted: #6e6258;
+  --text-faint: #968b80;
+  --accent: #8a6240;
+  --accent-hover: #6f4e30;
+  --accent-contrast: #ffffff;
+  --accent-soft: rgba(138, 98, 64, 0.12);
+  --accent-ring: rgba(138, 98, 64, 0.32);
+  --control-hover: rgba(0, 0, 0, 0.055);
+  --control-active: rgba(0, 0, 0, 0.08);
+  --danger: #b53a1f;
+  --danger-soft: rgba(181, 58, 31, 0.35);
+  --danger-bg: rgba(181, 58, 31, 0.08);
+  --success: #5e7549;
+  --success-soft: rgba(94, 117, 73, 0.35);
+  --warning: #a86a18;
+  --warning-soft: rgba(168, 106, 24, 0.35);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .btn {
+    transition: none;
+  }
+
+  .btn:active {
+    transform: none;
+  }
+}

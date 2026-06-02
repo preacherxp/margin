@@ -1,0 +1,223 @@
+/* Print stylesheet — used when the user invokes the print dialog
+   (⌘P or the editor's "PDF" button). The macOS WebView print
+   dialog has a built-in "Save as PDF" option, so this doubles as
+   the PDF export path. Goals:
+     - hide app chrome (top bar, side bar, editor bar, metadata
+       panel, status bar, drawers, popovers)
+     - drop the dark colour scheme — printers should output black
+       text on a white page
+     - show the print-only header (title, type, status, date, tags)
+       so the printed page has context
+     - let the prose flow naturally with sensible page-break rules */
+
+@media screen {
+  .print-only {
+    display: none !important;
+  }
+}
+
+@media print {
+  @page {
+    margin: 18mm 16mm;
+  }
+
+  :root {
+    color-scheme: light;
+  }
+
+  html,
+  body,
+  #app,
+  .app-shell,
+  .app-main,
+  .editor-view,
+  .editor-body,
+  .editor-pane,
+  .editor-root {
+    background: #ffffff !important;
+    color: #111111 !important;
+    height: auto !important;
+    min-height: 0 !important;
+    overflow: visible !important;
+    display: block !important;
+    box-shadow: none !important;
+  }
+
+  body {
+    font-family: Georgia, 'Times New Roman', serif;
+    font-size: 11pt;
+    line-height: 1.55;
+  }
+
+  /* hide app chrome */
+  [data-testid='top-bar'],
+  [data-testid='editor-bar'],
+  [data-testid='meta-panel'],
+  [data-testid='metadata-panel'],
+  [data-testid='status-bar'],
+  [data-testid='sidebar'],
+  [data-testid='cmd-palette'],
+  [data-testid='version-drawer'],
+  [data-testid='linkedin-export-popover'],
+  [data-print-hidden] {
+    display: none !important;
+  }
+
+  /* editor surface: drop borders/padding/scroll */
+  .editor-content {
+    overflow: visible !important;
+    padding: 0 !important;
+    background: #ffffff !important;
+    color: #111111 !important;
+  }
+
+  .editor-content .ProseMirror,
+  .ProseMirror {
+    max-width: none !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    color: #111111 !important;
+    font-size: 11pt !important;
+    line-height: 1.55 !important;
+    min-height: 0 !important;
+  }
+
+  /* prose: serif body, dark headings, no panel/border styling */
+  .ProseMirror h1,
+  .ProseMirror h2,
+  .ProseMirror h3,
+  .print-only h1 {
+    color: #111111 !important;
+    font-family: Georgia, 'Times New Roman', serif !important;
+    page-break-after: avoid;
+    break-after: avoid;
+  }
+
+  .ProseMirror h1 {
+    font-size: 20pt !important;
+  }
+  .ProseMirror h2 {
+    font-size: 15pt !important;
+  }
+  .ProseMirror h3 {
+    font-size: 13pt !important;
+  }
+
+  .ProseMirror p,
+  .ProseMirror li,
+  .ProseMirror blockquote {
+    orphans: 3;
+    widows: 3;
+  }
+
+  .ProseMirror pre,
+  .ProseMirror code {
+    background: #f4f4f4 !important;
+    color: #222222 !important;
+    border: 1px solid #dcdcdc !important;
+    font-family: 'SF Mono', Menlo, Consolas, monospace !important;
+    font-size: 10pt !important;
+  }
+
+  .ProseMirror pre {
+    page-break-inside: avoid;
+    break-inside: avoid;
+  }
+
+  .ProseMirror blockquote {
+    border-left: 3px solid #888888 !important;
+    color: #333333 !important;
+    margin-left: 0 !important;
+    padding-left: 12pt !important;
+  }
+
+  .ProseMirror hr {
+    border: none !important;
+    border-top: 1px solid #999999 !important;
+  }
+
+  .ProseMirror a {
+    color: #111111 !important;
+    text-decoration: underline !important;
+  }
+
+  /* Surface the href next to the link text — the printed page can't
+     follow links, so the URL has to be visible. Skip empty hrefs
+     and pure anchors. */
+  .ProseMirror a[href^='http']::after,
+  .ProseMirror a[href^='mailto:']::after {
+    content: ' (' attr(href) ')';
+    font-size: 9pt;
+    color: #555555;
+    word-break: break-all;
+  }
+
+  .ProseMirror img {
+    max-width: 100% !important;
+    border: 1px solid #cccccc !important;
+    page-break-inside: avoid;
+    break-inside: avoid;
+  }
+
+  .ProseMirror ul[data-type='taskList'] li > label input {
+    accent-color: #111111;
+  }
+
+  /* the print-only header block injected by EditorView */
+  .print-only {
+    display: block !important;
+    padding-bottom: 12pt;
+    margin-bottom: 16pt;
+    border-bottom: 1px solid #cccccc;
+    color: #111111;
+  }
+
+  .print-only .print-title {
+    font-family: Georgia, 'Times New Roman', serif !important;
+    font-size: 22pt;
+    font-weight: 700;
+    margin: 0 0 8pt;
+    line-height: 1.2;
+    color: #111111;
+  }
+
+  .print-only .print-meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8pt 14pt;
+    font-family: 'SF Mono', Menlo, Consolas, monospace;
+    font-size: 9pt;
+    color: #555555;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+  }
+
+  .print-only .print-meta .print-sep {
+    color: #cccccc;
+  }
+
+  .print-only .print-tags {
+    list-style: none;
+    padding: 0;
+    margin: 8pt 0 0;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 4pt 10pt;
+    font-family: 'SF Mono', Menlo, Consolas, monospace;
+    font-size: 9pt;
+    color: #555555;
+  }
+
+  .print-only .print-tags li::before {
+    content: '#';
+    color: #999999;
+  }
+
+  .print-only .print-hook {
+    margin: 10pt 0 0;
+    font-size: 12pt;
+    font-style: italic;
+    color: #333333;
+    line-height: 1.45;
+  }
+}

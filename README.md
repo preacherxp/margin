@@ -1,182 +1,206 @@
-# LinkedIn Poster
+# Margin
 
-A Tauri desktop app for drafting LinkedIn and blog posts. Posts are plain
-markdown files with YAML frontmatter, stored in a folder you choose. Dark-mode
-first, snappy, keyboard-driven.
+Margin is a Tauri desktop app for drafting LinkedIn and blog posts. It stores every post as a plain Markdown file with YAML frontmatter in a folder you choose, so the content stays portable and editable outside the app.
 
-> Status: **phase 6 / 10** — templates. See
-> [`plans/linkedin-poster-plan.md`](./plans/linkedin-poster-plan.md) for the
-> full build plan.
+The app also runs in browser dev mode with localStorage-backed mock data, which keeps the Vue UI easy to work on without launching the native shell.
 
 ## Stack
 
-| Layer    | Choice                                              |
-| -------- | --------------------------------------------------- |
-| Shell    | Tauri 2 (Rust + macOS WebView)                      |
-| Frontend | Vue 3 + Vite + TS + Pinia + Vue Router              |
-| Storage  | Markdown files + YAML frontmatter                   |
-| Frontmatter | [`yaml`](https://www.npmjs.com/package/yaml)     |
-| IDs      | [`ulid`](https://www.npmjs.com/package/ulid)        |
-| Tests    | Vitest (unit) + Playwright (e2e)                    |
+| Layer | Choice |
+| --- | --- |
+| Shell | Tauri 2, Rust, macOS WebView |
+| Frontend | Vue 3, Vite, TypeScript, Pinia, Vue Router |
+| Editor | TipTap 3 with Markdown round-trip |
+| Storage | Markdown files plus YAML frontmatter |
+| Search | MiniSearch |
+| IDs | ULID |
+| Tests | Vitest and Playwright |
 
-## Features (current)
+## Features
 
-- **Folder picker** — choose where to store posts (Tauri native dialog on
-  desktop, mock in browser dev)
-- **Posts as markdown** — each post is a single `.md` file with YAML
-  frontmatter, so you can edit them in any text editor
-- **Frontmatter round-trip** — typed `Post` model with status, type, tags,
-  LinkedIn metadata, version counter, and ULID
-- **Post list** — three-pane (sidebar filters / list / hover preview) with
-  status + tag chips, sort, quick filter, and ⌘K command palette (MiniSearch
-  full-text across title, tags, body, hook, CTA)
-- **TipTap editor** — block-based with slash shortcuts, bubble menu,
-  markdown round-trip, drag-and-drop image paste into `posts/assets/`
-- **Autosave** — debounced 800ms, deep-equal skip, flush on unmount
-- **LinkedIn panel** — hook / CTA / audience / hashtags
-- **LinkedIn export** — popover with char-count, progress bar, one-click
-  clipboard copy
-- **Templates** — five built-in templates (LinkedIn Story / Listicle / Hot
-  Take, Blog How-To / Essay), `/templates` browser view, "From template…"
-  popover in the home view
-- **Create posts** — blank or from a template, file written as
-  `YYYY-MM-DD-slug.md` in your `posts/` folder
-- **Read / save / delete** — full CRUD over the Tauri bridge
-- **Settings persistence** — last-used folder is remembered
-- **Mock data first** — the app runs in any browser with seeded sample posts,
-  so the UI is testable without launching Tauri
-
-## Features (planned)
-
-- Version history with diff
-- PDF export via print stylesheet
-- Theme toggle (dark / light / system)
-- Keyboard shortcuts and polished empty states
+- Folder picker for choosing a workspace or `posts/` directory.
+- Markdown-on-disk posts with typed YAML frontmatter.
+- Three-pane home view with filters, sorting, hover preview, and full-text search.
+- Command palette and global keyboard shortcuts.
+- TipTap editor with slash shortcuts, bubble menu, Markdown serialization, and autosave.
+- Drag-and-drop or pasted images copied into `posts/assets/`.
+- LinkedIn metadata panel for hook, CTA, audience, and hashtags.
+- LinkedIn export popover with character count and clipboard copy.
+- Built-in and user templates with a dedicated templates browser.
+- Version snapshots stored per post, capped at 50 versions.
+- Print/PDF export through the native macOS print sheet in Tauri or `window.print()` in browser dev.
+- Settings view with persisted posts folder and dark, light, or system theme.
+- Browser mock mode with seeded sample posts, templates, settings, and versions.
 
 ## Requirements
 
-- **Node** 20.19+ or 22.12+
-- **pnpm** 10+
-- **Rust** 1.77+ (for Tauri)
-- **macOS** for `tauri:dev` / `tauri:build` (the project is macOS-first; the
-  frontend itself runs anywhere)
+- Node `20.19+` or `22.12+`
+- pnpm `10+`
+- Rust `1.77+` for Tauri commands and desktop builds
+- macOS for the current Tauri desktop target
 
-## Run it
+## Development
 
-### Browser dev (frontend only, mock data)
+Install dependencies:
 
 ```sh
 pnpm install
+```
+
+Run the frontend only:
+
+```sh
 pnpm dev
 ```
 
-Open <http://localhost:1420>. The app loads 4 sample posts from `localStorage`
-so you can iterate on the UI without launching Tauri.
+Open <http://localhost:1420>. Browser mode uses mock data in `localStorage` and does not touch your filesystem.
 
-### Tauri dev (real filesystem, native folder picker)
+Run the desktop app with real filesystem access:
 
 ```sh
-pnpm install
 pnpm tauri:dev
 ```
 
-First run will compile the Rust shell (a few minutes). After that, hot reload
-works for both the Vue app and the Rust commands.
-
-### Type-check, lint, test, build
+Build a production frontend bundle:
 
 ```sh
-pnpm type-check       # vue-tsc
-pnpm lint             # oxlint + eslint
-pnpm format           # oxfmt
-pnpm test:unit        # vitest
-pnpm test:e2e         # playwright (requires `npx playwright install` first)
-pnpm build            # type-check + production vite build
+pnpm build
 ```
 
-### Build a release `.app`
+Build the Tauri app:
 
 ```sh
 pnpm tauri:build
 ```
 
-The signed-notarized bundle lands in `src-tauri/target/release/bundle/`.
+The generated app bundle is written under `src-tauri/target/release/bundle/`.
 
-## Project layout
+## Scripts
 
+| Command | Description |
+| --- | --- |
+| `pnpm dev` | Start Vite on port 1420. |
+| `pnpm tauri:dev` | Start the Tauri desktop app with Vite hot reload. |
+| `pnpm build` | Run type-checking and build the frontend. |
+| `pnpm build-only` | Build only the Vite frontend. |
+| `pnpm preview` | Preview the production frontend build. |
+| `pnpm type-check` | Run `vue-tsc --build`. |
+| `pnpm lint` | Run oxlint and eslint with fixes enabled. |
+| `pnpm format` | Format `src/` with oxfmt. |
+| `pnpm test:unit` | Run Vitest. |
+| `pnpm test:e2e` | Run Playwright tests. |
+| `pnpm tauri:build` | Build the desktop app. |
+
+Playwright requires browser binaries before the first e2e run:
+
+```sh
+pnpm exec playwright install
 ```
+
+## Project Layout
+
+```text
 linkedin-poster/
-├── src/                       # Vue app
-│   ├── App.vue                # shell (TopBar + <RouterView/>)
-│   ├── main.ts                # pinia + router + tokens.css
-│   ├── router/index.ts        # /  → HomeView
-│   ├── views/HomeView.vue     # folder picker + post list + new-post form
-│   ├── components/shell/      # TopBar.vue
-│   ├── stores/
-│   │   ├── settings.ts        # folder, theme
-│   │   └── posts.ts           # list, open, save, create, remove
-│   ├── lib/
-│   │   ├── tauri-bridge.ts    # typed wrappers, mock fallback
-│   │   ├── frontmatter.ts     # parse / serialize YAML + body
-│   │   ├── mock-data.ts       # 4 sample posts (story, listicle, hot take, blog)
-│   │   └── id.ts              # ULID
-│   ├── types/                 # post.ts, settings.ts
-│   ├── styles/tokens.css      # dark-mode CSS vars
-│   └── __tests__/             # vitest specs
-├── src-tauri/                 # Rust shell
-│   └── src/
-│       ├── lib.rs             # registers dialog plugin + commands
-│       ├── main.rs
-│       └── commands/
-│           ├── posts.rs       # list / read / write / delete / ensure_posts_dir
-│           ├── settings.rs    # get / save (app_config_dir/app-config.json)
-│           └── error.rs       # AppError, AppResult
-├── e2e/                       # Playwright
-└── plans/linkedin-poster-plan.md
+├── src/                         # Vue app
+│   ├── App.vue                  # App shell, global overlays, router outlet
+│   ├── main.ts                  # Vue, Pinia, router, global CSS
+│   ├── router/                  # Home, editor, templates, settings routes
+│   ├── views/                   # Top-level screens
+│   ├── components/              # Shell, post, editor, template, search, UI components
+│   ├── stores/                  # Pinia stores for posts, settings, UI, toasts
+│   ├── lib/                     # Bridge, Markdown/frontmatter, templates, search, editor helpers
+│   ├── templates/               # Built-in Markdown templates
+│   ├── styles/                  # Design tokens and print stylesheet
+│   ├── types/                   # Shared TypeScript models
+│   └── __tests__/               # Vitest specs
+├── src-tauri/                   # Rust shell and filesystem commands
+│   └── src/commands/            # posts, templates, assets, versions, settings, print
+├── e2e/                         # Playwright tests
+├── public/                      # Static assets
+└── package.json
 ```
 
-## How storage works
+## Storage Model
 
-- **Folder layout** — choose either a workspace root that contains
-  `posts/<file>.md` or the `posts/` folder itself. The app creates the
-  resolved posts folder on demand.
-- **File naming** — `YYYY-MM-DD-slug.md`, slugified from the title (max 60
-  chars). Internal `id` is a ULID stored in frontmatter, so renames are safe.
-- **Frontmatter** — id, title, status, type, createdAt, updatedAt,
-  scheduledFor, publishedAt, tags, template, linkedin (hook/cta/hashtags/audience),
-  assets, versions, path.
-- **Settings** — `app_config_dir/app-config.json` (Tauri) or `localStorage`
-  (browser mock). Currently stores the posts folder and theme.
+Pick either a workspace root or the `posts/` folder itself. If you pick a workspace root, the app writes posts under `posts/` and templates under `templates/`.
 
-## Tauri commands (Rust ↔ JS bridge)
+```text
+workspace/
+├── posts/
+│   ├── 2026-06-02-example-post.md
+│   ├── assets/
+│   │   └── pasted-image.png
+│   └── .versions/
+│       └── 01J...POSTID/
+│           └── 2026-06-02T12-30-00.000Z.md
+└── templates/
+    └── custom-template.md
+```
 
-| Command                | Args                              | Returns        |
-| ---------------------- | --------------------------------- | -------------- |
-| `pick_folder`          | (none — native dialog)            | `string?`      |
-| `list_posts`           | `folder: string`                  | `PostMeta[]`   |
-| `read_post`            | `path: string`                    | `Post`         |
-| `write_post`           | `path: string, content: string`   | `void`         |
-| `delete_post`          | `path: string`                    | `void`         |
-| `ensure_posts_dir`     | `folder: string`                  | `string`       |
-| `list_templates`       | `folder: string`                  | `TemplateMeta[]` |
-| `read_template`        | `path: string`                    | `Template`     |
-| `write_template`       | `path: string, content: string`   | `void`         |
-| `delete_template`      | `path: string`                    | `void`         |
-| `ensure_templates_dir` | `folder: string`                  | `string`       |
-| `get_settings`         | (none)                            | `AppSettings`  |
-| `save_settings`        | `settings: AppSettings`           | `void`         |
+Post filenames use `YYYY-MM-DD-slug.md`. The durable post identity is the ULID stored in frontmatter, so filenames can be changed without changing the post ID.
 
-The frontend never calls `invoke` directly — everything goes through
-`src/lib/tauri-bridge.ts`, which falls back to `localStorage` when not running
-inside Tauri.
+A post file looks like this:
 
-## Out of scope (v1)
+```md
+---
+id: 01KT3VK9P7CCMT85JCXGMEQPV4
+title: Example post
+status: draft
+type: linkedin
+createdAt: 2026-06-02T09:45:51.559Z
+updatedAt: 2026-06-02T09:45:51.559Z
+scheduledFor: null
+publishedAt: null
+tags: [writing]
+template: linkedin-story
+path: /workspace/posts/2026-06-02-example-post.md
+linkedin:
+  hook: "A strong first line."
+  cta: "What would you add?"
+  hashtags: [LinkedIn, Writing]
+  audience: "founders and operators"
+assets: []
+versions: 0
+---
+Markdown body goes here.
+```
 
-- AI rewrite / polish
-- Sync / multi-device
-- Image generation / hosting
-- Direct publish to LinkedIn (export → manual paste)
-- Real-time collaboration
+Settings are stored in Tauri app config as `app-config.json`. Browser dev mode stores settings, posts, templates, and version snapshots in `localStorage` under `margin:*` keys.
+
+## Tauri Bridge
+
+The frontend does not call `invoke` directly. Use `src/lib/tauri-bridge.ts`, which routes to Tauri commands in desktop mode and to mock localStorage implementations in browser mode.
+
+| Command | Args | Returns |
+| --- | --- | --- |
+| `list_posts` | `folder` | `PostMeta[]` |
+| `read_post` | `path` | `Post` |
+| `write_post` | `path`, `content` | `void` |
+| `delete_post` | `path` | `void` |
+| `ensure_posts_dir` | `folder` | `string` |
+| `copy_asset` | `src`, `destDir` | `CopiedAsset` |
+| `ensure_assets_dir` | `postsDir` | `string` |
+| `list_templates` | `folder` | `TemplateMeta[]` |
+| `read_template` | `path` | `Template` |
+| `write_template` | `path`, `content` | `void` |
+| `delete_template` | `path` | `void` |
+| `ensure_templates_dir` | `folder` | `string` |
+| `save_version` | `folder`, `postId`, `content` | `VersionMeta` |
+| `list_versions` | `folder`, `postId` | `VersionMeta[]` |
+| `read_version` | `folder`, `postId`, `ts` | `VersionContent` |
+| `delete_versions_for_post` | `folder`, `postId` | `void` |
+| `print_active_window` | none | `void` |
+| `get_settings` | none | `AppSettings` |
+| `save_settings` | `settings` | `void` |
+
+`pickFolder()` uses `@tauri-apps/plugin-dialog` directly from the bridge instead of a Rust command.
+
+## Out of Scope
+
+- Direct publishing to LinkedIn.
+- AI rewrite, polish, or content generation.
+- Sync, collaboration, or multi-device storage.
+- Image generation or hosted media management.
 
 ## License
 
