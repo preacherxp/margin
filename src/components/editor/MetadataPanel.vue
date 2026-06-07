@@ -164,13 +164,7 @@ function onTagKey(e: KeyboardEvent) {
     <div class="field">
       <label class="label">Tags</label>
       <div class="tag-row" data-testid="tags-row">
-        <span
-          v-for="t in post.tags"
-          :key="t"
-          class="tag-chip"
-          data-testid="tag-chip"
-          :data-tag="t"
-        >
+        <span v-for="t in post.tags" :key="t" class="tag-chip" data-testid="tag-chip" :data-tag="t">
           {{ t }}
           <button
             class="tag-remove"
@@ -190,12 +184,7 @@ function onTagKey(e: KeyboardEvent) {
           @keydown="onTagKey"
           @blur="addTag"
         />
-        <button
-          v-else
-          class="tag-add"
-          data-testid="tag-add-btn"
-          @click="isAddingTag = true"
-        >
+        <button v-else class="tag-add" data-testid="tag-add-btn" @click="isAddingTag = true">
           + tag
         </button>
       </div>

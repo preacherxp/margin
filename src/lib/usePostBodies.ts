@@ -26,15 +26,44 @@ async function loadMissingBodies(ids: string[]): Promise<void> {
   }
 }
 
-async function ensureBodiesLoaded(): Promise<void> {
+function idsFromStore(): string[] {
   const posts = usePostsStore()
-  await loadMissingBodies(posts.items.map((p) => p.id))
+  return posts.items.map((p) => p.id)
+}
+
+async function ensureBodiesLoaded(): Promise<void> {
+  await loadMissingBodies(idsFromStore())
+}
+
+/**
+ * Cheap signature of the current posts list. Only changes when ids are
+ * added or removed (in-place metadata patches don't change it), so the
+ * watcher stays quiet during the per-keystroke autosave storm and only
+ * re-fires when the membership of the list actually shifts.
+ */
+function listSignature(): string {
+  const posts = usePostsStore()
+  let sig = ''
+  for (const p of posts.items) sig += `${p.id}|`
+  return sig
+}
+
+/**
+ * Write a body into the cache without going through the read pipeline.
+ * Called by the posts store after a save so the palette / preview see
+ * the fresh body without re-fetching the file.
+ */
+export function setBody(id: string, body: string): void {
+  bodyCache.value.set(id, body)
+}
+
+export function forgetBody(id: string): void {
+  bodyCache.value.delete(id)
 }
 
 export function usePostBodies() {
-  const posts = usePostsStore()
   watch(
-    () => posts.items.map((p) => p.id).join('|'),
+    listSignature,
     () => {
       inflight = ensureBodiesLoaded()
     },
@@ -43,5 +72,7 @@ export function usePostBodies() {
   return {
     bodyCache,
     ensureBodiesLoaded: () => inflight ?? ensureBodiesLoaded(),
+    setBody,
+    forgetBody,
   }
 }

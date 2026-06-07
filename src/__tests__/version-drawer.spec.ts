@@ -125,7 +125,11 @@ describe('VersionDrawer', () => {
     await saveVersion(
       POST.id,
       settings.postsFolder!,
-      buildPostFrontmatter('current body line 1\nolder line 2', 'Drawer test', '2026-06-01T11:00:00.000Z'),
+      buildPostFrontmatter(
+        'current body line 1\nolder line 2',
+        'Drawer test',
+        '2026-06-01T11:00:00.000Z',
+      ),
     )
 
     const wrapper = await mountDrawer({ open: true, post: POST })
@@ -147,7 +151,11 @@ describe('VersionDrawer', () => {
     await settings.init()
     await settings.chooseFolder()
     const { saveVersion } = await import('@/lib/tauri-bridge')
-    const oldContent = buildPostFrontmatter('restored body\n', 'Restored title', '2026-06-01T11:00:00.000Z')
+    const oldContent = buildPostFrontmatter(
+      'restored body\n',
+      'Restored title',
+      '2026-06-01T11:00:00.000Z',
+    )
     await saveVersion(POST.id, settings.postsFolder!, oldContent)
 
     posts.$patch({ current: { ...POST, body: 'current body' } })

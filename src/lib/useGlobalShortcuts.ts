@@ -114,7 +114,9 @@ const handlersStack: GlobalShortcutHandlers[] = []
 let rootHandler: ((e: KeyboardEvent) => void) | null = null
 const listenerOptions = { capture: true }
 
-function findActiveHandler(name: 'onNewPost' | 'onSaveNow' | 'onRefresh'): GlobalShortcutHandlers | undefined {
+function findActiveHandler(
+  name: 'onNewPost' | 'onSaveNow' | 'onRefresh',
+): GlobalShortcutHandlers | undefined {
   for (let i = handlersStack.length - 1; i >= 0; i -= 1) {
     if (handlersStack[i]?.[name]) return handlersStack[i]
   }
@@ -136,7 +138,11 @@ export function startGlobalShortcuts(handlers: GlobalShortcutHandlers = {}): () 
   return () => {
     const idx = handlersStack.lastIndexOf(handlers)
     if (idx >= 0) handlersStack.splice(idx, 1)
-    if (handlersStack.length === 0 && rootHandler && typeof window.removeEventListener === 'function') {
+    if (
+      handlersStack.length === 0 &&
+      rootHandler &&
+      typeof window.removeEventListener === 'function'
+    ) {
       window.removeEventListener('keydown', rootHandler, listenerOptions)
       rootHandler = null
     }

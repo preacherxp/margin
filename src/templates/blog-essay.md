@@ -8,10 +8,10 @@ tags:
   - long-form
 isTemplate: true
 linkedin:
-  hook: ""
-  cta: ""
+  hook: ''
+  cta: ''
   hashtags: []
-  audience: ""
+  audience: ''
 ---
 
 A long-form essay. One main idea, explored from multiple angles. 1000-2000 words is the sweet spot.

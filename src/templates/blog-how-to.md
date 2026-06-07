@@ -8,10 +8,10 @@ tags:
   - tutorial
 isTemplate: true
 linkedin:
-  hook: ""
-  cta: ""
+  hook: ''
+  cta: ''
   hashtags: []
-  audience: ""
+  audience: ''
 ---
 
 A clear, step-by-step guide. The reader should finish with a result, not just a feeling.

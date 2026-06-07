@@ -8,11 +8,11 @@ tags:
   - personal
 isTemplate: true
 linkedin:
-  hook: ""
+  hook: ''
   cta: "What's your version of this story?"
   hashtags:
-    - "#story"
-    - "#career"
+    - '#story'
+    - '#career'
   audience: people who learn from real experiences
 ---
 

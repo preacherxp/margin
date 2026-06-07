@@ -5,9 +5,7 @@ import { createMemoryHistory, createRouter, type Router } from 'vue-router'
 import { nextTick } from 'vue'
 
 vi.mock('@/lib/tauri-bridge', async () => {
-  const actual = await vi.importActual<typeof import('@/lib/tauri-bridge')>(
-    '@/lib/tauri-bridge',
-  )
+  const actual = await vi.importActual<typeof import('@/lib/tauri-bridge')>('@/lib/tauri-bridge')
   return {
     ...actual,
     printActiveWindow: vi.fn<() => Promise<void>>().mockResolvedValue(undefined),

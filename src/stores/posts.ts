@@ -14,6 +14,7 @@ import { serializeFrontmatter } from '@/lib/frontmatter'
 import { newId } from '@/lib/id'
 import { resolvePostsDir } from '@/lib/posts-dir'
 import { useSettingsStore } from './settings'
+import { setBody, forgetBody } from '@/lib/usePostBodies'
 
 export const usePostsStore = defineStore('posts', () => {
   const items = ref<PostMeta[]>([])
@@ -33,6 +34,11 @@ export const usePostsStore = defineStore('posts', () => {
     }
     for (const p of items.value) out[p.status]++
     return out
+  })
+  const allTags = computed<string[]>(() => {
+    const set = new Set<string>()
+    for (const p of items.value) for (const t of p.tags) set.add(t)
+    return Array.from(set).sort()
   })
 
   async function refresh() {
@@ -83,13 +89,7 @@ export const usePostsStore = defineStore('posts', () => {
       }
       const content = serializeFrontmatter(stamped)
       await writePost(stamped.path, content)
-      if (
-        snapshot &&
-        folder &&
-        prev &&
-        prev.id === stamped.id &&
-        prev.path === stamped.path
-      ) {
+      if (snapshot && folder && prev && prev.id === stamped.id && prev.path === stamped.path) {
         const prevContent = serializeFrontmatter(prev)
         try {
           await saveVersion(stamped.id, folder, prevContent)
@@ -98,7 +98,8 @@ export const usePostsStore = defineStore('posts', () => {
         }
       }
       current.value = stamped
-      await refresh()
+      setBody(stamped.id, stamped.body)
+      patchItem(stamped)
     } catch (e) {
       error.value = e instanceof Error ? e.message : String(e)
       throw e
@@ -143,7 +144,8 @@ export const usePostsStore = defineStore('posts', () => {
 
     const content = serializeFrontmatter(post)
     await writePost(path, content)
-    await refresh()
+    setBody(post.id, post.body)
+    prependItem(post)
     return post
   }
 
@@ -155,14 +157,11 @@ export const usePostsStore = defineStore('posts', () => {
     const settings = useSettingsStore()
     if (!settings.postsFolder) throw new Error('no posts folder selected')
 
-    const template: Template = await readTemplateBySlug(
-      input.templateSlug,
-      settings.postsFolder,
-    )
+    const template: Template = await readTemplateBySlug(input.templateSlug, settings.postsFolder)
 
     const now = new Date().toISOString()
     const id = newId()
-    const title = (input.title?.trim() || template.name) || 'Untitled'
+    const title = input.title?.trim() || template.name || 'Untitled'
     const type: PostType = input.type ?? template.type
     const slug = slugify(title) || 'untitled'
     const datePrefix = now.slice(0, 10)
@@ -189,7 +188,8 @@ export const usePostsStore = defineStore('posts', () => {
 
     const content = serializeFrontmatter(post)
     await writePost(path, content)
-    await refresh()
+    setBody(post.id, post.body)
+    prependItem(post)
     return post
   }
 
@@ -208,11 +208,36 @@ export const usePostsStore = defineStore('posts', () => {
         }
       }
       if (current.value?.path === path) current.value = null
-      await refresh()
+      if (targetId) forgetBody(targetId)
+      removeItemByPath(path)
     } catch (e) {
       error.value = e instanceof Error ? e.message : String(e)
       throw e
     }
+  }
+
+  /**
+   * Replace the meta for an existing post in-place. Used after save()
+   * so the home list reflects the new `updatedAt` without re-reading
+   * every file on disk via `listPosts`.
+   */
+  function patchItem(post: Post): void {
+    const meta = metaFromPost(post)
+    const idx = items.value.findIndex((p) => p.id === meta.id)
+    if (idx >= 0) {
+      items.value[idx] = meta
+    } else {
+      items.value.unshift(meta)
+    }
+  }
+
+  function prependItem(post: Post): void {
+    items.value.unshift(metaFromPost(post))
+  }
+
+  function removeItemByPath(path: string): void {
+    const idx = items.value.findIndex((p) => p.path === path)
+    if (idx >= 0) items.value.splice(idx, 1)
   }
 
   return {
@@ -224,6 +249,7 @@ export const usePostsStore = defineStore('posts', () => {
     templates,
     count,
     byStatus,
+    allTags,
     refresh,
     open,
     close,
@@ -240,4 +266,20 @@ function slugify(s: string): string {
     .replace(/[^a-z0-9]+/g, '-')
     .replace(/^-+|-+$/g, '')
     .slice(0, 60)
+}
+
+function metaFromPost(p: Post): PostMeta {
+  return {
+    id: p.id,
+    title: p.title,
+    status: p.status,
+    type: p.type,
+    createdAt: p.createdAt,
+    updatedAt: p.updatedAt,
+    scheduledFor: p.scheduledFor,
+    publishedAt: p.publishedAt,
+    tags: p.tags,
+    template: p.template,
+    path: p.path,
+  }
 }

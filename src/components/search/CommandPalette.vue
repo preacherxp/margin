@@ -1,18 +1,20 @@
 <script setup lang="ts">
-import { computed, nextTick, onMounted, ref, watch } from 'vue'
+import { computed, nextTick, onBeforeUnmount, onMounted, ref, watch } from 'vue'
 import { useRouter } from 'vue-router'
 import { usePostsStore } from '@/stores/posts'
 import { useUiStore } from '@/stores/ui'
 import {
   createPostIndex,
+  deindexPost,
   highlight,
-  indexAll,
+  indexPost,
+  type IndexedPost,
   searchPosts,
   type PostSearchHit,
 } from '@/lib/search'
 import { usePostBodies } from '@/lib/usePostBodies'
 import Shortcut from '@/components/ui/Shortcut.vue'
-import type { Post, PostMeta, PostStatus } from '@/types/post'
+import type { PostMeta, PostStatus } from '@/types/post'
 
 const ui = useUiStore()
 const posts = usePostsStore()
@@ -24,23 +26,110 @@ const activeIdx = ref(0)
 const inputRef = ref<HTMLInputElement | null>(null)
 const index = createPostIndex()
 
-const indexedPosts = computed<Post[]>(() => {
-  return posts.items.map((meta) => ({
-    ...(meta as PostMeta),
-    body: bodyCache.value.get(meta.id) ?? '',
-    linkedin: { hook: '', cta: '', hashtags: [], audience: '' },
-    assets: [],
-    versions: 0,
-  })) as Post[]
-})
+/**
+ * Incremental index sync. We track what we last indexed for each id
+ * and only call `indexPost` / `deindexPost` for the delta when the
+ * underlying list or body cache shifts. The previous implementation
+ * rebuilt the entire index on every change, which is the dominant cost
+ * for large post libraries.
+ */
+const lastIndexed = new Map<string, IndexedPost>()
+const INDEX_DEBOUNCE_MS = 150
+let syncTimer: ReturnType<typeof setTimeout> | null = null
 
-watch(
-  indexedPosts,
-  (list) => {
-    indexAll(index, list)
-  },
-  { immediate: true },
-)
+function buildIndexed(id: string): IndexedPost | null {
+  const meta = posts.items.find((p) => p.id === id)
+  if (!meta) return null
+  return {
+    id: meta.id,
+    title: meta.title,
+    tags: meta.tags.join(' '),
+    body: bodyCache.value.get(id) ?? '',
+    hook: '',
+    cta: '',
+    status: meta.status,
+    type: meta.type,
+  }
+}
+
+function indexedChanged(a: IndexedPost, b: IndexedPost): boolean {
+  return (
+    a.title !== b.title ||
+    a.body !== b.body ||
+    a.status !== b.status ||
+    a.type !== b.type ||
+    a.tags !== b.tags
+  )
+}
+
+function scheduleSync() {
+  if (syncTimer) return
+  syncTimer = setTimeout(() => {
+    syncTimer = null
+    doSync()
+  }, INDEX_DEBOUNCE_MS)
+}
+
+function doSync() {
+  const currentIds = new Set<string>()
+  for (const m of posts.items) {
+    currentIds.add(m.id)
+    const next = buildIndexed(m.id)
+    if (!next) continue
+    const prev = lastIndexed.get(m.id)
+    if (!prev) {
+      indexPost(index, next)
+      lastIndexed.set(m.id, next)
+    } else if (indexedChanged(prev, next)) {
+      indexPost(index, next)
+      lastIndexed.set(m.id, next)
+    }
+  }
+  for (const id of lastIndexed.keys()) {
+    if (!currentIds.has(id)) {
+      deindexPost(index, id)
+      lastIndexed.delete(id)
+    }
+  }
+}
+
+/**
+ * Stable string signature of the indexed subset. We only need to wake
+ * the sync when the set of posts or the body length / metadata changes
+ * for any of them; the actual diff inside `doSync` decides what to
+ * re-index.
+ */
+function indexSignature(): string {
+  const cache = bodyCache.value
+  let s = ''
+  for (const m of posts.items) {
+    const body = cache.get(m.id) ?? ''
+    s +=
+      m.id +
+      '\u0001' +
+      m.title +
+      '\u0001' +
+      m.tags.length +
+      '\u0001' +
+      m.status +
+      '\u0001' +
+      m.type +
+      '\u0001' +
+      body.length +
+      '\n'
+  }
+  return s
+}
+
+watch(indexSignature, scheduleSync, { immediate: true })
+
+onBeforeUnmount(() => {
+  if (syncTimer) {
+    clearTimeout(syncTimer)
+    syncTimer = null
+  }
+  lastIndexed.clear()
+})
 
 const hits = computed<PostSearchHit[]>(() => {
   if (!query.value.trim()) return []
@@ -131,7 +220,6 @@ function snippetFor(hit: PostSearchHit): string {
 }
 
 onMounted(() => {
-  indexAll(index, indexedPosts.value)
   void ensureBodiesLoaded()
 })
 </script>
@@ -174,7 +262,9 @@ onMounted(() => {
               <div v-if="snippetFor(hit)" class="hit-snippet">{{ snippetFor(hit) }}</div>
             </div>
             <div class="hit-meta">
-              <span class="badge" :data-status="hit.status">{{ statusLabel(hit.status as PostStatus) }}</span>
+              <span class="badge" :data-status="hit.status">{{
+                statusLabel(hit.status as PostStatus)
+              }}</span>
               <span class="muted">{{ hit.type }}</span>
             </div>
           </li>

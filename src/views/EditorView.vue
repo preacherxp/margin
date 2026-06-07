@@ -8,6 +8,7 @@ import { useDebouncedAutoSave, type AutosaveStatus } from '@/lib/tiptap/useDebou
 import { resolvePostsDir } from '@/lib/posts-dir'
 import { useGlobalShortcuts } from '@/lib/useGlobalShortcuts'
 import { useToasts } from '@/lib/useToasts'
+import { postEqual } from '@/lib/postEqual'
 import PostEditor from '@/components/editor/PostEditor.vue'
 import MetadataPanel from '@/components/editor/MetadataPanel.vue'
 import StatusBar from '@/components/editor/StatusBar.vue'
@@ -49,10 +50,7 @@ const lastSnapshotAt = ref(0)
 const { status, flush } = useDebouncedAutoSave({
   source: draft,
   delay: 800,
-  isEqual: (a, b) => {
-    if (!a || !b) return a === b
-    return a.id === b.id && a.path === b.path && JSON.stringify(a) === JSON.stringify(b)
-  },
+  isEqual: (a, b) => postEqual(a, b),
   save: async (value) => {
     if (!value) return
     const now = Date.now()
@@ -211,9 +209,7 @@ const printDate = computed(() => {
 
 const printHashtags = computed(() => {
   if (!draft.value || draft.value.type !== 'linkedin') return []
-  return draft.value.linkedin.hashtags
-    .map((h) => h.replace(/^#+/, '').trim())
-    .filter(Boolean)
+  return draft.value.linkedin.hashtags.map((h) => h.replace(/^#+/, '').trim()).filter(Boolean)
 })
 
 function onPrintTriggered() {
@@ -281,11 +277,7 @@ function onPrintTriggered() {
         >
           {{ draft.linkedin.hook }}
         </p>
-        <ul
-          v-if="printHashtags.length > 0"
-          class="print-tags"
-          data-testid="print-tags"
-        >
+        <ul v-if="printHashtags.length > 0" class="print-tags" data-testid="print-tags">
           <li v-for="tag in printHashtags" :key="tag">{{ tag }}</li>
         </ul>
       </header>

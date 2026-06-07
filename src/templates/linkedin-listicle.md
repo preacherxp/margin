@@ -8,11 +8,11 @@ tags:
   - tips
 isTemplate: true
 linkedin:
-  hook: ""
-  cta: "Save this for your next project."
+  hook: ''
+  cta: 'Save this for your next project.'
   hashtags:
-    - "#tips"
-    - "#productivity"
+    - '#tips'
+    - '#productivity'
   audience: people who want practical advice
 ---
 

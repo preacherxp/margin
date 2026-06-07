@@ -88,9 +88,7 @@ describe('ShortcutsModal', () => {
     ui.openShortcuts()
     mountModal()
     await nextTick()
-    const btn = document.querySelector<HTMLButtonElement>(
-      '[data-testid="shortcuts-modal-close"]',
-    )
+    const btn = document.querySelector<HTMLButtonElement>('[data-testid="shortcuts-modal-close"]')
     expect(btn).not.toBeNull()
     btn?.click()
     expect(ui.shortcutsOpen).toBe(false)

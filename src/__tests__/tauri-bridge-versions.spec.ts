@@ -33,8 +33,7 @@ versions: 1
 Hello world
 `
 
-const CONTENT_V2 = CONTENT_V1
-  .replace('First version', 'Second version')
+const CONTENT_V2 = CONTENT_V1.replace('First version', 'Second version')
   .replace('Hello world', 'Hello there, friend')
   .replace('versions: 1', 'versions: 2')
   .replace('updatedAt: 2026-06-01T10:00:00.000Z', 'updatedAt: 2026-06-02T10:00:00.000Z')

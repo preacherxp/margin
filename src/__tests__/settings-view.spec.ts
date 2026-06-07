@@ -33,15 +33,21 @@ describe('SettingsView', () => {
     expect(folder).toContain('No folder selected')
   })
 
-  it('renders three theme options with the current one selected', async () => {
+  it('renders six theme options with the current one selected', async () => {
     const wrapper = mount(SettingsView, { global: { plugins: [router] } })
     await flushPromises()
     await nextTick()
     const dark = wrapper.get('[data-testid="settings-theme-dark"]')
     const light = wrapper.get('[data-testid="settings-theme-light"]')
+    const sepia = wrapper.get('[data-testid="settings-theme-sepia"]')
+    const highContrast = wrapper.get('[data-testid="settings-theme-high-contrast"]')
+    const nord = wrapper.get('[data-testid="settings-theme-nord"]')
     const system = wrapper.get('[data-testid="settings-theme-system"]')
     expect(dark.attributes('aria-checked')).toBe('true')
     expect(light.attributes('aria-checked')).toBe('false')
+    expect(sepia.attributes('aria-checked')).toBe('false')
+    expect(highContrast.attributes('aria-checked')).toBe('false')
+    expect(nord.attributes('aria-checked')).toBe('false')
     expect(system.attributes('aria-checked')).toBe('false')
   })
 
@@ -58,6 +64,21 @@ describe('SettingsView', () => {
 
     const stored = JSON.parse(localStorage.getItem('margin:settings') ?? '{}')
     expect(stored.theme).toBe('light')
+  })
+
+  it('switches to a new palette theme and persists it', async () => {
+    const wrapper = mount(SettingsView, { global: { plugins: [router] } })
+    await flushPromises()
+    await nextTick()
+    await wrapper.get('[data-testid="settings-theme-nord"]').trigger('click')
+    await flushPromises()
+    await nextTick()
+
+    const nord = wrapper.get('[data-testid="settings-theme-nord"]')
+    expect(nord.attributes('aria-checked')).toBe('true')
+
+    const stored = JSON.parse(localStorage.getItem('margin:settings') ?? '{}')
+    expect(stored.theme).toBe('nord')
   })
 
   it('choosing a folder shows the new path and clears the pick spinner', async () => {

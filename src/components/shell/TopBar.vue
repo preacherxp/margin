@@ -26,25 +26,11 @@ function onNav(name: 'home' | 'templates' | 'settings') {
   <header class="top-bar" data-testid="top-bar">
     <div class="brand" data-testid="brand">
       <span class="brand-mark" aria-hidden="true">
-        <svg
-          viewBox="0 0 24 24"
-          xmlns="http://www.w3.org/2000/svg"
-          width="24"
-          height="24"
-        >
-          <rect
-            x="2.75"
-            y="2.75"
-            width="18.5"
-            height="18.5"
-            rx="4"
-            fill="var(--panel-2)"
-            stroke="var(--brand)"
-            stroke-width="1.5"
+        <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" width="24" height="24">
+          <path
+            d="M3 20 L3 4 L6.5 4 L12 13 L17.5 4 L21 4 L21 20 L17.5 20 L17.5 9.5 L13.5 16 L10.5 16 L6.5 9.5 L6.5 20 Z"
+            fill="var(--accent)"
           />
-          <rect x="7" y="5.75" width="3" height="12.5" rx="0.75" fill="var(--accent)" />
-          <rect x="11.5" y="5.75" width="3" height="12.5" rx="0.75" fill="var(--accent-hover)" />
-          <circle cx="17" cy="12" r="1.5" fill="var(--success)" />
         </svg>
       </span>
       <span class="brand-name">Margin</span>

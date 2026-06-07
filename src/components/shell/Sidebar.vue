@@ -26,11 +26,7 @@ const SORT_OPTIONS: { value: SortKey; label: string }[] = [
   { value: 'scheduled', label: 'Scheduled' },
 ]
 
-const allTags = computed(() => {
-  const set = new Set<string>()
-  for (const p of posts.items) for (const t of p.tags) set.add(t)
-  return Array.from(set).sort()
-})
+const allTags = computed(() => posts.allTags)
 
 const counts = computed(() => posts.byStatus)
 const total = computed(() => posts.count)
@@ -197,10 +193,23 @@ function onTagClick(tag: string) {
   color: var(--text);
 }
 
+.status-btn {
+  position: relative;
+}
+
 .status-btn.active {
   background: var(--panel-2);
   color: var(--text);
-  box-shadow: inset 2px 0 0 var(--accent);
+}
+
+.status-btn.active::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: 2px;
+  background: var(--accent);
 }
 
 .status-count {

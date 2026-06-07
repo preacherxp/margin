@@ -181,8 +181,9 @@ describe('LinkedinExport', () => {
   it('updates preview text reactively when post changes', async () => {
     const wrapper = mount(LinkedinExport, { props: { post: makePost() } })
     await wrapper.get('[data-testid="linkedin-export-btn"]').trigger('click')
-    const initial = (wrapper.get('[data-testid="linkedin-export-text"]').element as HTMLTextAreaElement)
-      .value
+    const initial = (
+      wrapper.get('[data-testid="linkedin-export-text"]').element as HTMLTextAreaElement
+    ).value
     expect(initial).toContain('A short hook.')
 
     await wrapper.setProps({
@@ -191,8 +192,9 @@ describe('LinkedinExport', () => {
         linkedin: { hook: 'New hook.', cta: '', hashtags: ['#x'], audience: '' },
       }),
     })
-    const next = (wrapper.get('[data-testid="linkedin-export-text"]').element as HTMLTextAreaElement)
-      .value
+    const next = (
+      wrapper.get('[data-testid="linkedin-export-text"]').element as HTMLTextAreaElement
+    ).value
     expect(next).toContain('New hook.')
     expect(next).toContain('Different body.')
     expect(next).toContain('#x')

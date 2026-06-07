@@ -3,11 +3,11 @@ import { storeToRefs } from 'pinia'
 import { useSettingsStore } from '@/stores/settings'
 import type { Theme } from '@/types/settings'
 
-export type ResolvedTheme = 'dark' | 'light'
+export type ResolvedTheme = 'dark' | 'light' | 'sepia' | 'high-contrast' | 'nord'
 
 const SYSTEM_QUERY = '(prefers-color-scheme: light)'
 
-function readSystemTheme(): ResolvedTheme {
+function readSystemTheme(): 'dark' | 'light' {
   if (typeof window === 'undefined' || typeof window.matchMedia !== 'function') {
     return 'dark'
   }
@@ -15,8 +15,8 @@ function readSystemTheme(): ResolvedTheme {
 }
 
 export function resolveTheme(theme: Theme): ResolvedTheme {
-  if (theme === 'light' || theme === 'dark') return theme
-  return readSystemTheme()
+  if (theme === 'system') return readSystemTheme()
+  return theme
 }
 
 function applyResolved(theme: ResolvedTheme): void {

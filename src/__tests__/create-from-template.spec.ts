@@ -84,9 +84,9 @@ describe('posts store: createFromTemplate (mock mode)', () => {
     const settings = useSettingsStore()
     await settings.clearFolder()
     const posts = usePostsStore()
-    await expect(
-      posts.createFromTemplate({ templateSlug: 'linkedin-story' }),
-    ).rejects.toThrow(/no posts folder/i)
+    await expect(posts.createFromTemplate({ templateSlug: 'linkedin-story' })).rejects.toThrow(
+      /no posts folder/i,
+    )
   })
 
   it('persists the post and re-reading yields the same body', async () => {

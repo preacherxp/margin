@@ -93,11 +93,7 @@ defineExpose({ isReady, stats })
 
 <template>
   <div ref="rootEl" class="editor-root">
-    <EditorContent
-      :editor="editor"
-      class="editor-content"
-      data-testid="prose-editor"
-    />
+    <EditorContent :editor="editor" class="editor-content" data-testid="prose-editor" />
   </div>
 </template>
 

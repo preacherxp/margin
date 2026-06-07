@@ -3,9 +3,7 @@ import { mount, flushPromises } from '@vue/test-utils'
 import { nextTick } from 'vue'
 
 vi.mock('@/lib/tauri-bridge', async () => {
-  const actual = await vi.importActual<typeof import('@/lib/tauri-bridge')>(
-    '@/lib/tauri-bridge',
-  )
+  const actual = await vi.importActual<typeof import('@/lib/tauri-bridge')>('@/lib/tauri-bridge')
   return {
     ...actual,
     printActiveWindow: vi.fn<() => Promise<void>>().mockResolvedValue(undefined),
@@ -74,14 +72,13 @@ describe('PrintExport', () => {
     const wrapper = mount(PrintExport)
     await wrapper.get('[data-testid="print-export-btn"]').trigger('click')
     await flushPromises()
-    expect(wrapper.get('[data-testid="print-export-btn"]').attributes('data-state')).toBe(
-      'opened',
-    )
+    expect(wrapper.get('[data-testid="print-export-btn"]').attributes('data-state')).toBe('opened')
     vi.advanceTimersByTime(4500)
     await flushPromises()
     expect(wrapper.find('[data-testid="print-export-status"]').exists()).toBe(false)
-    expect((wrapper.get('[data-testid="print-export-btn"]').element as HTMLButtonElement)
-      .disabled).toBe(false)
+    expect(
+      (wrapper.get('[data-testid="print-export-btn"]').element as HTMLButtonElement).disabled,
+    ).toBe(false)
   })
 
   it('shows an error state when the bridge rejects', async () => {
@@ -113,8 +110,9 @@ describe('PrintExport', () => {
     // resolve the pending print
     pending.resolve?.()
     await flushPromises()
-    expect((wrapper.get('[data-testid="print-export-btn"]').element as HTMLButtonElement)
-      .disabled).toBe(false)
+    expect(
+      (wrapper.get('[data-testid="print-export-btn"]').element as HTMLButtonElement).disabled,
+    ).toBe(false)
   })
 
   it('does not invoke the print bridge when disabled', async () => {

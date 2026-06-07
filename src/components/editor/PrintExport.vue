@@ -41,11 +41,7 @@ async function triggerPrint() {
   setState('opening', 'Opening print panel…')
   try {
     await printActiveWindow()
-    setState(
-      'opened',
-      'Print dialog opened — pick Save as PDF',
-      4000,
-    )
+    setState('opened', 'Print dialog opened — pick Save as PDF', 4000)
   } catch (e) {
     const errMsg = e instanceof Error ? e.message : String(e)
     setState('error', `Print failed: ${errMsg}`, 6000)

@@ -1,29 +1,29 @@
 :root {
   color-scheme: dark;
 
-  --brand: #503B31;
-  --bg: #0f0b08;
-  --panel: #1a1410;
-  --panel-2: #221a14;
-  --border: #2d231c;
-  --border-strong: #3d3026;
-  --text: #e7e2dc;
-  --text-muted: #9d9892;
-  --text-faint: #6e6964;
-  --accent: #C9A78A;
-  --accent-hover: #B5896A;
+  --brand: #503b31;
+  --bg: #1a130d;
+  --panel: #241a13;
+  --panel-2: #2e221a;
+  --border: #3d2f24;
+  --border-strong: #4f3e30;
+  --text: #f5f0e9;
+  --text-muted: #b8b2a9;
+  --text-faint: #8a847b;
+  --accent: #e0bfa0;
+  --accent-hover: #cfaa89;
   --accent-contrast: #1a120c;
-  --accent-soft: rgba(201, 167, 138, 0.15);
-  --accent-ring: rgba(201, 167, 138, 0.35);
-  --control-hover: rgba(255, 255, 255, 0.06);
-  --control-active: rgba(255, 255, 255, 0.09);
-  --danger: #e76f51;
-  --danger-soft: rgba(231, 111, 81, 0.4);
-  --danger-bg: rgba(231, 111, 81, 0.08);
-  --success: #94a373;
-  --success-soft: rgba(148, 163, 115, 0.4);
-  --warning: #e8a04a;
-  --warning-soft: rgba(232, 160, 74, 0.4);
+  --accent-soft: rgba(224, 191, 160, 0.18);
+  --accent-ring: rgba(224, 191, 160, 0.4);
+  --control-hover: rgba(255, 255, 255, 0.08);
+  --control-active: rgba(255, 255, 255, 0.13);
+  --danger: #ff7a55;
+  --danger-soft: rgba(255, 122, 85, 0.45);
+  --danger-bg: rgba(255, 122, 85, 0.12);
+  --success: #a8b988;
+  --success-soft: rgba(168, 185, 136, 0.45);
+  --warning: #f4b464;
+  --warning-soft: rgba(244, 180, 100, 0.45);
 
   --radius: 6px;
   --radius-lg: 10px;
@@ -196,28 +196,112 @@ kbd.key {
 [data-theme='light'] {
   color-scheme: light;
 
-  --bg: #faf6f1;
+  --bg: #fbf8f3;
   --panel: #ffffff;
   --panel-2: #f3ece4;
   --border: #e6dccf;
   --border-strong: #cdc1b1;
-  --text: #2a201a;
-  --text-muted: #6e6258;
-  --text-faint: #968b80;
-  --accent: #8a6240;
-  --accent-hover: #6f4e30;
+  --text: #1c130d;
+  --text-muted: #5a4e44;
+  --text-faint: #7a6e62;
+  --accent: #7a4f2a;
+  --accent-hover: #5e3d20;
   --accent-contrast: #ffffff;
-  --accent-soft: rgba(138, 98, 64, 0.12);
-  --accent-ring: rgba(138, 98, 64, 0.32);
-  --control-hover: rgba(0, 0, 0, 0.055);
-  --control-active: rgba(0, 0, 0, 0.08);
-  --danger: #b53a1f;
-  --danger-soft: rgba(181, 58, 31, 0.35);
-  --danger-bg: rgba(181, 58, 31, 0.08);
-  --success: #5e7549;
-  --success-soft: rgba(94, 117, 73, 0.35);
-  --warning: #a86a18;
-  --warning-soft: rgba(168, 106, 24, 0.35);
+  --accent-soft: rgba(122, 79, 42, 0.14);
+  --accent-ring: rgba(122, 79, 42, 0.36);
+  --control-hover: rgba(0, 0, 0, 0.07);
+  --control-active: rgba(0, 0, 0, 0.1);
+  --danger: #c43a1c;
+  --danger-soft: rgba(196, 58, 28, 0.4);
+  --danger-bg: rgba(196, 58, 28, 0.1);
+  --success: #6d8553;
+  --success-soft: rgba(109, 133, 83, 0.4);
+  --warning: #b8761f;
+  --warning-soft: rgba(184, 118, 31, 0.4);
+}
+
+/* Sepia — warm paper background, brown ink. Reader-friendly for long drafts. */
+[data-theme='sepia'] {
+  color-scheme: light;
+
+  --bg: #f4ecd8;
+  --panel: #fbf4e3;
+  --panel-2: #e8dec4;
+  --border: #d6c9a8;
+  --border-strong: #b8a981;
+  --text: #3a2c1a;
+  --text-muted: #6b553a;
+  --text-faint: #8a7458;
+  --accent: #a85a1c;
+  --accent-hover: #8a4814;
+  --accent-contrast: #fbf4e3;
+  --accent-soft: rgba(168, 90, 28, 0.15);
+  --accent-ring: rgba(168, 90, 28, 0.4);
+  --control-hover: rgba(58, 44, 26, 0.08);
+  --control-active: rgba(58, 44, 26, 0.14);
+  --danger: #a8331c;
+  --danger-soft: rgba(168, 51, 28, 0.4);
+  --danger-bg: rgba(168, 51, 28, 0.1);
+  --success: #5e7a3e;
+  --success-soft: rgba(94, 122, 62, 0.4);
+  --warning: #b07020;
+  --warning-soft: rgba(176, 112, 32, 0.4);
+}
+
+/* High contrast — pure black/white, strong borders, yellow accent for max legibility. */
+[data-theme='high-contrast'] {
+  color-scheme: dark;
+
+  --bg: #000000;
+  --panel: #0a0a0a;
+  --panel-2: #1a1a1a;
+  --border: #ffffff;
+  --border-strong: #ffffff;
+  --text: #ffffff;
+  --text-muted: #d4d4d4;
+  --text-faint: #a8a8a8;
+  --accent: #ffff00;
+  --accent-hover: #e6e600;
+  --accent-contrast: #000000;
+  --accent-soft: rgba(255, 255, 0, 0.2);
+  --accent-ring: rgba(255, 255, 0, 0.7);
+  --control-hover: rgba(255, 255, 255, 0.15);
+  --control-active: rgba(255, 255, 255, 0.25);
+  --danger: #ff6b6b;
+  --danger-soft: rgba(255, 107, 107, 0.5);
+  --danger-bg: rgba(255, 107, 107, 0.18);
+  --success: #5ce67a;
+  --success-soft: rgba(92, 230, 122, 0.5);
+  --warning: #ffb84d;
+  --warning-soft: rgba(255, 184, 77, 0.5);
+}
+
+/* Nord — cool slate panels, frosty cyan accent. Polar night + snow storm palette. */
+[data-theme='nord'] {
+  color-scheme: dark;
+
+  --bg: #2e3440;
+  --panel: #3b4252;
+  --panel-2: #434c5e;
+  --border: #4c566a;
+  --border-strong: #5e6779;
+  --text: #eceff4;
+  --text-muted: #d8dee9;
+  --text-faint: #a3aab8;
+  --accent: #88c0d0;
+  --accent-hover: #a3d4e0;
+  --accent-contrast: #2e3440;
+  --accent-soft: rgba(136, 192, 208, 0.18);
+  --accent-ring: rgba(136, 192, 208, 0.45);
+  --control-hover: rgba(255, 255, 255, 0.06);
+  --control-active: rgba(255, 255, 255, 0.11);
+  --danger: #bf616a;
+  --danger-soft: rgba(191, 97, 106, 0.5);
+  --danger-bg: rgba(191, 97, 106, 0.14);
+  --success: #a3be8c;
+  --success-soft: rgba(163, 190, 140, 0.5);
+  --warning: #ebcb8b;
+  --warning-soft: rgba(235, 203, 139, 0.5);
 }
 
 @media (prefers-reduced-motion: reduce) {

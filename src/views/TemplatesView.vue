@@ -3,11 +3,7 @@ import { computed, onMounted, ref, watch } from 'vue'
 import { useRouter } from 'vue-router'
 import { usePostsStore } from '@/stores/posts'
 import { useSettingsStore } from '@/stores/settings'
-import {
-  ensureTemplatesDir,
-  listTemplates,
-  readTemplateBySlug,
-} from '@/lib/tauri-bridge'
+import { ensureTemplatesDir, listTemplates, readTemplateBySlug } from '@/lib/tauri-bridge'
 import { listBuiltInTemplates } from '@/lib/templates'
 import ListSkeleton from '@/components/ui/ListSkeleton.vue'
 import type { Template, TemplateMeta, PostType } from '@/types/post'
@@ -202,11 +198,7 @@ const bodyPreview = computed(() => {
           <ListSkeleton :count="4" :lines="2" />
         </div>
 
-        <div
-          v-else-if="filtered.length === 0"
-          class="empty small"
-          data-testid="templates-empty"
-        >
+        <div v-else-if="filtered.length === 0" class="empty small" data-testid="templates-empty">
           <p class="muted">No templates match this filter.</p>
         </div>
 
@@ -225,7 +217,9 @@ const bodyPreview = computed(() => {
             <div class="item-main">
               <div class="item-title">
                 {{ t.name }}
-                <span v-if="t.isBuiltIn" class="badge" data-testid="template-builtin-badge">built-in</span>
+                <span v-if="t.isBuiltIn" class="badge" data-testid="template-builtin-badge"
+                  >built-in</span
+                >
                 <span v-else class="badge user">yours</span>
               </div>
               <div class="item-desc muted">{{ t.description || '—' }}</div>

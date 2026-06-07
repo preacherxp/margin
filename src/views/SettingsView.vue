@@ -21,6 +21,9 @@ const resolved = computed<Theme>(() => settings.theme)
 const themeOptions: { value: Theme; label: string; hint: string }[] = [
   { value: 'dark', label: 'Dark', hint: 'Warm-tinted dark surfaces' },
   { value: 'light', label: 'Light', hint: 'Cream backgrounds' },
+  { value: 'sepia', label: 'Sepia', hint: 'Warm paper, brown ink' },
+  { value: 'high-contrast', label: 'High contrast', hint: 'Pure black and white' },
+  { value: 'nord', label: 'Nord', hint: 'Cool slate and frost' },
   { value: 'system', label: 'System', hint: 'Follow OS appearance' },
 ]
 
@@ -82,9 +85,8 @@ async function onSelectTheme(theme: Theme) {
         <div class="card-text">
           <h2 class="card-title">Posts folder</h2>
           <p class="card-desc">
-            Posts are saved as <code>.md</code> files with YAML frontmatter in the
-            folder you choose. You can keep them in iCloud, Dropbox, or anywhere
-            on disk.
+            Posts are saved as <code>.md</code> files with YAML frontmatter in the folder you
+            choose. You can keep them in iCloud, Dropbox, or anywhere on disk.
           </p>
           <p class="folder-value" data-testid="settings-folder-value">
             <span class="folder-label">Folder</span>
@@ -119,8 +121,8 @@ async function onSelectTheme(theme: Theme) {
         <div class="card-text">
           <h2 class="card-title">Theme</h2>
           <p class="card-desc">
-            Dark is the default. Light flips to warm cream surfaces. System
-            follows your OS appearance and updates live.
+            Dark is the default. Pick a full color scheme, or use System to follow your OS
+            appearance and update live.
           </p>
         </div>
         <div class="theme-options" role="radiogroup" aria-label="Theme">
@@ -148,12 +150,7 @@ async function onSelectTheme(theme: Theme) {
     </div>
 
     <Transition name="fade">
-      <p
-        v-if="saveMessage"
-        class="save-toast"
-        role="status"
-        data-testid="settings-save-toast"
-      >
+      <p v-if="saveMessage" class="save-toast" role="status" data-testid="settings-save-toast">
         {{ saveMessage }}
       </p>
     </Transition>

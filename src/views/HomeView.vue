@@ -280,11 +280,7 @@ function onPickerKey(e: KeyboardEvent) {
             >
               From Template…
             </button>
-            <TemplatePicker
-              v-if="pickerOpen"
-              @close="closePicker"
-              @used="closePicker"
-            />
+            <TemplatePicker v-if="pickerOpen" @close="closePicker" @used="closePicker" />
           </div>
         </form>
 
@@ -307,11 +303,7 @@ function onPickerKey(e: KeyboardEvent) {
 
         <PostListSkeleton v-if="posts.loading && posts.items.length === 0" />
 
-        <ul
-          v-else-if="filtered.length > 0"
-          class="post-list"
-          data-testid="post-list"
-        >
+        <ul v-else-if="filtered.length > 0" class="post-list" data-testid="post-list">
           <PostCard
             v-for="p in filtered"
             :key="p.id"
@@ -323,11 +315,7 @@ function onPickerKey(e: KeyboardEvent) {
           />
         </ul>
 
-        <div
-          v-else-if="ui.hasActiveFilters"
-          class="empty small"
-          data-testid="no-matches-empty"
-        >
+        <div v-else-if="ui.hasActiveFilters" class="empty small" data-testid="no-matches-empty">
           <p class="muted">No posts match your filters.</p>
           <button class="btn" data-testid="clear-filters-btn" @click="ui.clearFilters">
             Clear Filters
@@ -337,7 +325,8 @@ function onPickerKey(e: KeyboardEvent) {
         <div v-else class="empty small" data-testid="no-posts-empty">
           <p class="muted">
             No posts yet. Create your first one above or press
-            <kbd class="key">{{ shortcutLabel(SHORTCUT.newPost) }}</kbd>.
+            <kbd class="key">{{ shortcutLabel(SHORTCUT.newPost) }}</kbd
+            >.
           </p>
         </div>
       </main>

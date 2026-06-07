@@ -20,13 +20,15 @@ async function copyPathsToAssets(
   postsDir: string,
 ): Promise<{ rel: string; abs: string }[]> {
   const assetsDir = await ensureAssetsDir(postsDir)
-  const out: { rel: string; abs: string }[] = []
-  for (const p of paths) {
-    if (!isImagePath(p)) continue
-    const res = await copyAsset(p, assetsDir)
-    out.push({ rel: res.relPath, abs: res.absPath })
-  }
-  return out
+  const imagePaths = paths.filter(isImagePath)
+  if (imagePaths.length === 0) return []
+  const copied = await Promise.all(
+    imagePaths.map(async (p) => {
+      const res = await copyAsset(p, assetsDir)
+      return { rel: res.relPath, abs: res.absPath }
+    }),
+  )
+  return copied
 }
 
 function insertImages(editor: Editor, rels: string[]) {

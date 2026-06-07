@@ -3,7 +3,12 @@ import SkeletonBar from '@/components/ui/SkeletonBar.vue'
 </script>
 
 <template>
-  <div class="editor-skeleton" data-testid="editor-skeleton" aria-busy="true" aria-label="Loading post">
+  <div
+    class="editor-skeleton"
+    data-testid="editor-skeleton"
+    aria-busy="true"
+    aria-label="Loading post"
+  >
     <div class="title-row">
       <SkeletonBar width="36%" height="22px" />
       <SkeletonBar width="120px" height="22px" />

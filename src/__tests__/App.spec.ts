@@ -40,10 +40,7 @@ describe('App shell', () => {
   })
 
   it('applies the saved theme to <html> on mount', async () => {
-    localStorage.setItem(
-      'margin:settings',
-      JSON.stringify({ postsFolder: null, theme: 'light' }),
-    )
+    localStorage.setItem('margin:settings', JSON.stringify({ postsFolder: null, theme: 'light' }))
     const router = buildRouter()
     router.push('/')
     await router.isReady()

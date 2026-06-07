@@ -33,7 +33,10 @@ const rootEl = ref<HTMLElement | null>(null)
 
 const folder = computed(() => settings.postsFolder)
 
-const diff = computed<{ lines: ReturnType<typeof diffRawContent>['lines']; summary: ReturnType<typeof summarizeDiff> } | null>(() => {
+const diff = computed<{
+  lines: ReturnType<typeof diffRawContent>['lines']
+  summary: ReturnType<typeof summarizeDiff>
+} | null>(() => {
   if (!currentContent.value || !selectedContent.value) return null
   const { lines } = diffRawContent(selectedContent.value.content, currentContent.value)
   return { lines, summary: summarizeDiff(lines) }
@@ -239,16 +242,16 @@ function previewLabel(ts: string): string {
         </aside>
 
         <section class="diff-pane" data-testid="version-diff">
-          <div v-if="!selectedTs" class="muted center">
-            Select a version from the timeline.
-          </div>
+          <div v-if="!selectedTs" class="muted center">Select a version from the timeline.</div>
           <div v-else-if="loadingVersion" class="muted center">Loading…</div>
           <template v-else-if="selectedContent && currentContent !== null">
             <div class="diff-meta">
               <div class="meta-block">
                 <span class="meta-label">Version</span>
                 <span class="meta-value">{{ previewLabel(selectedContent.ts) }}</span>
-                <span v-if="selectedContent.title" class="meta-sub">{{ selectedContent.title }}</span>
+                <span v-if="selectedContent.title" class="meta-sub">{{
+                  selectedContent.title
+                }}</span>
               </div>
               <div class="meta-arrow">→</div>
               <div class="meta-block">
@@ -271,12 +274,12 @@ function previewLabel(ts: string): string {
               >
                 <span class="ln old">{{ line.oldIndex !== null ? line.oldIndex + 1 : '' }}</span>
                 <span class="ln new">{{ line.newIndex !== null ? line.newIndex + 1 : '' }}</span>
-                <span class="marker">{{ line.kind === 'add' ? '+' : line.kind === 'del' ? '−' : ' ' }}</span>
+                <span class="marker">{{
+                  line.kind === 'add' ? '+' : line.kind === 'del' ? '−' : ' '
+                }}</span>
                 <pre class="content">{{ line.value || ' ' }}</pre>
               </div>
-              <div v-if="diff.lines.length === 0" class="muted center small">
-                Empty diff.
-              </div>
+              <div v-if="diff.lines.length === 0" class="muted center small">Empty diff.</div>
             </div>
 
             <div class="diff-actions">

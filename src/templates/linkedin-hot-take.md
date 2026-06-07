@@ -8,11 +8,11 @@ tags:
   - opinion
 isTemplate: true
 linkedin:
-  hook: ""
-  cta: "Agree or disagree? Tell me below."
+  hook: ''
+  cta: 'Agree or disagree? Tell me below.'
   hashtags:
-    - "#opinion"
-    - "#linkedin"
+    - '#opinion'
+    - '#linkedin'
   audience: people who like short, opinionated posts
 ---
 

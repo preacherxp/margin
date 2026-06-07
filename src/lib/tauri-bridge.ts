@@ -1,5 +1,12 @@
-import type { Post, PostMeta, Template, TemplateMeta, VersionContent, VersionMeta } from '@/types/post'
-import { DEFAULT_SETTINGS, type AppSettings } from '@/types/settings'
+import type {
+  Post,
+  PostMeta,
+  Template,
+  TemplateMeta,
+  VersionContent,
+  VersionMeta,
+} from '@/types/post'
+import { DEFAULT_SETTINGS, isTheme, type AppSettings } from '@/types/settings'
 import { resolvePostsDir } from './posts-dir'
 import { SAMPLE_POSTS } from './mock-data'
 import { getBuiltInTemplate, listBuiltInTemplates, serializeTemplate } from './templates'
@@ -15,30 +22,46 @@ const MOCK_TEMPLATES_DIR = '/mock/templates'
 
 const MAX_VERSIONS_PER_POST = 50
 
+/**
+ * In-memory cache of the mock-mode posts blob. The previous
+ * implementation re-parsed the entire localStorage JSON on every
+ * `readMockPosts()` call, which the post store hits many times during
+ * a single refresh. The cache is invalidated explicitly by
+ * `writeMockPosts`, `resetMockData`, and whenever the underlying key
+ * disappears.
+ */
+let mockPostsCache: Post[] | null = null
+
 export function isTauri(): boolean {
   return typeof window !== 'undefined' && '__TAURI_INTERNALS__' in window
 }
 
 function readMockPosts(): Post[] {
+  if (mockPostsCache) return mockPostsCache
   const raw = localStorage.getItem(MOCK_POSTS_KEY)
   if (raw) {
     try {
-      return JSON.parse(raw) as Post[]
+      mockPostsCache = JSON.parse(raw) as Post[]
+      return mockPostsCache
     } catch {
-      return []
+      mockPostsCache = []
+      return mockPostsCache
     }
   }
   if (localStorage.getItem(MOCK_SEEDED_KEY) !== '1') {
     localStorage.setItem(MOCK_POSTS_KEY, JSON.stringify(SAMPLE_POSTS))
     localStorage.setItem(MOCK_SEEDED_KEY, '1')
-    return [...SAMPLE_POSTS]
+    mockPostsCache = [...SAMPLE_POSTS]
+    return mockPostsCache
   }
-  return []
+  mockPostsCache = []
+  return mockPostsCache
 }
 
 function writeMockPosts(posts: Post[]): void {
   localStorage.setItem(MOCK_POSTS_KEY, JSON.stringify(posts))
   localStorage.setItem(MOCK_SEEDED_KEY, '1')
+  mockPostsCache = posts
 }
 
 function readMockSettings(): AppSettings {
@@ -98,10 +121,7 @@ export async function loadSettings(): Promise<AppSettings> {
     const raw = await invoke<{ postsFolder: string | null; theme: string | null }>('get_settings')
     return {
       postsFolder: raw.postsFolder,
-      theme:
-        raw.theme === 'dark' || raw.theme === 'light' || raw.theme === 'system'
-          ? raw.theme
-          : 'dark',
+      theme: typeof raw.theme === 'string' && isTheme(raw.theme) ? raw.theme : 'dark',
     }
   }
   return readMockSettings()
@@ -463,6 +483,7 @@ export function resetMockData(): void {
   localStorage.removeItem(MOCK_TEMPLATES_KEY)
   localStorage.removeItem(MOCK_VERSIONS_KEY)
   localStorage.removeItem(MOCK_VERSIONS_CONTENT_KEY)
+  mockPostsCache = null
 }
 
 /**

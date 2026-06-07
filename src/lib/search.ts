@@ -53,12 +53,12 @@ export function indexAll(index: MiniSearch<IndexedPost>, posts: Post[]): void {
   index.addAll(posts.map(postToIndexed))
 }
 
-export function indexPost(index: MiniSearch<IndexedPost>, post: Post): void {
-  if (index.has(post.id)) {
-    index.replace(postToIndexed(post))
+export function indexPost(index: MiniSearch<IndexedPost>, indexed: IndexedPost): void {
+  if (index.has(indexed.id)) {
+    index.replace(indexed)
     return
   }
-  index.add(postToIndexed(post))
+  index.add(indexed)
 }
 
 export function deindexPost(index: MiniSearch<IndexedPost>, id: string): void {

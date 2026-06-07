@@ -28,10 +28,7 @@ describe('settings store (mock mode)', () => {
   })
 
   it('clears the folder on clearFolder', async () => {
-    localStorage.setItem(
-      'margin:settings',
-      JSON.stringify({ postsFolder: '/x', theme: 'dark' }),
-    )
+    localStorage.setItem('margin:settings', JSON.stringify({ postsFolder: '/x', theme: 'dark' }))
     const settings = useSettingsStore()
     await settings.init()
     await settings.clearFolder()

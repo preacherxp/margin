@@ -258,14 +258,18 @@ describe('buildLinkedinOutput', () => {
 
   it('marks overLimit when chars exceed LinkedIn limit', () => {
     const big = 'x'.repeat(LINKEDIN_CHAR_LIMIT + 10)
-    const out = buildLinkedinOutput(makePost({ body: big, linkedin: { hook: '', cta: '', hashtags: [], audience: '' } }))
+    const out = buildLinkedinOutput(
+      makePost({ body: big, linkedin: { hook: '', cta: '', hashtags: [], audience: '' } }),
+    )
     expect(out.overLimit).toBe(true)
     expect(out.chars).toBeGreaterThan(LINKEDIN_CHAR_LIMIT)
   })
 
   it('does not mark overLimit when at or below limit', () => {
     const ok = 'x'.repeat(LINKEDIN_CHAR_LIMIT)
-    const out = buildLinkedinOutput(makePost({ body: ok, linkedin: { hook: '', cta: '', hashtags: [], audience: '' } }))
+    const out = buildLinkedinOutput(
+      makePost({ body: ok, linkedin: { hook: '', cta: '', hashtags: [], audience: '' } }),
+    )
     expect(out.overLimit).toBe(false)
   })
 

@@ -29,9 +29,7 @@ describe('home filtering & sorting', () => {
     if (tags.length > 0) out = out.filter((p) => tags.every((t) => p.tags.includes(t)))
     if (q) {
       out = out.filter(
-        (p) =>
-          p.title.toLowerCase().includes(q) ||
-          p.tags.some((t) => t.toLowerCase().includes(q)),
+        (p) => p.title.toLowerCase().includes(q) || p.tags.some((t) => t.toLowerCase().includes(q)),
       )
     }
 

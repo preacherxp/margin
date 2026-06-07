@@ -3,10 +3,7 @@ import { computed, nextTick, onMounted, ref, watch } from 'vue'
 import { useRouter } from 'vue-router'
 import { usePostsStore } from '@/stores/posts'
 import { useSettingsStore } from '@/stores/settings'
-import {
-  ensureTemplatesDir,
-  listTemplates,
-} from '@/lib/tauri-bridge'
+import { ensureTemplatesDir, listTemplates } from '@/lib/tauri-bridge'
 import { listBuiltInTemplates } from '@/lib/templates'
 import type { PostType, TemplateMeta } from '@/types/post'
 

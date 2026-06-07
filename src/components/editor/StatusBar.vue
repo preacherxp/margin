@@ -37,12 +37,7 @@ const statusLabel = computed(() => {
     <span class="metric" data-testid="char-count">{{ stats.chars }} chars</span>
     <span class="sep">·</span>
     <span class="metric" data-testid="read-time">~{{ stats.readMinutes }} min read</span>
-    <span
-      v-if="path"
-      class="path"
-      data-testid="status-bar-path"
-      :title="path"
-    >{{ path }}</span>
+    <span v-if="path" class="path" data-testid="status-bar-path" :title="path">{{ path }}</span>
   </footer>
 </template>
 

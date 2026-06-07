@@ -1,9 +1,9 @@
 <script setup lang="ts">
-import { computed } from 'vue'
+import { computed, onBeforeUnmount, ref, watch } from 'vue'
+import { marked } from 'marked'
 import { usePostsStore } from '@/stores/posts'
 import { useUiStore } from '@/stores/ui'
 import { readPost } from '@/lib/tauri-bridge'
-import { ref, watch } from 'vue'
 import type { Post, PostMeta } from '@/types/post'
 
 const posts = usePostsStore()
@@ -17,37 +17,73 @@ const previewMeta = computed<PostMeta | null>(() => {
 const full = ref<Post | null>(null)
 const loading = ref(false)
 
-async function loadPreview(id: string | null) {
+const PREVIEW_DEBOUNCE_MS = 120
+let debounceTimer: ReturnType<typeof setTimeout> | null = null
+let inflightToken = 0
+
+function clearDebounce() {
+  if (debounceTimer) {
+    clearTimeout(debounceTimer)
+    debounceTimer = null
+  }
+}
+
+function schedulePreview(id: string | null) {
+  clearDebounce()
   if (!id) {
+    inflightToken += 1
+    loading.value = false
     full.value = null
     return
   }
+  debounceTimer = setTimeout(() => {
+    debounceTimer = null
+    void runPreview(id)
+  }, PREVIEW_DEBOUNCE_MS)
+}
+
+async function runPreview(id: string) {
+  const token = ++inflightToken
   const meta = posts.items.find((p) => p.id === id)
   if (!meta) {
-    full.value = null
+    if (token === inflightToken && ui.previewId === id) {
+      full.value = null
+      loading.value = false
+    }
     return
   }
   loading.value = true
   try {
-    full.value = await readPost(meta.path)
+    const post = await readPost(meta.path)
+    if (token === inflightToken && ui.previewId === id) {
+      full.value = post
+    }
   } catch {
-    full.value = null
+    if (token === inflightToken && ui.previewId === id) {
+      full.value = null
+    }
   } finally {
-    loading.value = false
+    if (token === inflightToken) loading.value = false
   }
 }
 
 watch(
   () => ui.previewId,
   (id) => {
-    void loadPreview(id)
+    schedulePreview(id)
   },
   { immediate: true },
 )
 
-const snippet = computed(() => {
-  if (!full.value) return ''
-  return full.value.body.replace(/\s+/g, ' ').trim().slice(0, 320)
+onBeforeUnmount(() => {
+  clearDebounce()
+  inflightToken += 1
+})
+
+const renderedBody = computed(() => {
+  const body = full.value?.body
+  if (!body) return ''
+  return marked.parse(body, { async: false, gfm: true, breaks: false }) as string
 })
 
 const dateLabel = computed(() => {
@@ -100,7 +136,12 @@ const hashtags = computed(() => full.value?.linkedin.hashtags ?? [])
       <section class="preview-section">
         <div class="section-label">Body</div>
         <p v-if="loading" class="muted">Loading…</p>
-        <p v-else-if="snippet" class="body">{{ snippet }}</p>
+        <div
+          v-else-if="renderedBody"
+          class="body"
+          v-html="renderedBody"
+          data-testid="preview-body"
+        />
         <p v-else class="muted empty-body">No body yet.</p>
       </section>
 
@@ -186,7 +227,6 @@ const hashtags = computed(() => full.value?.linkedin.hashtags ?? [])
 }
 
 .hook,
-.body,
 .cta {
   margin: 0;
   font-size: 12px;
@@ -195,10 +235,161 @@ const hashtags = computed(() => full.value?.linkedin.hashtags ?? [])
 }
 
 .body {
+  font-size: 12px;
+  line-height: 1.6;
+  color: var(--text);
+  word-wrap: break-word;
+}
+
+.body :deep(h1),
+.body :deep(h2),
+.body :deep(h3),
+.body :deep(h4),
+.body :deep(h5),
+.body :deep(h6) {
+  font-family: var(--font-sans);
+  font-weight: 600;
+  line-height: 1.3;
+  margin: 14px 0 6px;
+}
+
+.body :deep(h1) {
+  font-size: 16px;
+}
+.body :deep(h2) {
+  font-size: 14px;
+}
+.body :deep(h3) {
+  font-size: 13px;
+}
+.body :deep(h4),
+.body :deep(h5),
+.body :deep(h6) {
+  font-size: 12px;
+}
+
+.body :deep(h1:first-child),
+.body :deep(h2:first-child),
+.body :deep(h3:first-child) {
+  margin-top: 0;
+}
+
+.body :deep(p) {
+  margin: 0 0 8px;
+}
+
+.body :deep(p:last-child) {
+  margin-bottom: 0;
+}
+
+.body :deep(ul),
+.body :deep(ol) {
+  margin: 0 0 8px;
+  padding-left: 20px;
+}
+
+.body :deep(li) {
+  margin: 2px 0;
+}
+
+.body :deep(li > p) {
+  margin: 0 0 4px;
+}
+
+.body :deep(strong) {
+  font-weight: 600;
+  color: var(--text);
+}
+
+.body :deep(em) {
+  font-style: italic;
+}
+
+.body :deep(code) {
   font-family: var(--font-mono);
   font-size: 11px;
+  background: var(--panel-2);
+  padding: 1px 4px;
+  border-radius: 3px;
+  color: var(--accent);
+}
+
+.body :deep(pre) {
+  margin: 0 0 8px;
+  padding: 8px 10px;
+  background: var(--panel-2);
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  overflow-x: auto;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  line-height: 1.5;
+}
+
+.body :deep(pre code) {
+  background: transparent;
+  padding: 0;
+  border-radius: 0;
+  color: var(--text);
+  font-size: inherit;
+}
+
+.body :deep(blockquote) {
+  margin: 0 0 8px;
+  padding: 4px 10px;
+  border-left: 2px solid var(--border-strong);
   color: var(--text-muted);
-  white-space: pre-wrap;
+  font-style: italic;
+}
+
+.body :deep(blockquote > :last-child) {
+  margin-bottom: 0;
+}
+
+.body :deep(hr) {
+  border: none;
+  border-top: 1px solid var(--border);
+  margin: 12px 0;
+}
+
+.body :deep(a) {
+  color: var(--accent);
+  text-decoration: underline;
+  text-underline-offset: 2px;
+  text-decoration-color: var(--accent-ring);
+}
+
+.body :deep(a:hover) {
+  text-decoration-color: var(--accent);
+}
+
+.body :deep(img) {
+  max-width: 100%;
+  height: auto;
+  border-radius: 4px;
+  margin: 4px 0;
+}
+
+.body :deep(table) {
+  border-collapse: collapse;
+  margin: 0 0 8px;
+  font-size: 11px;
+}
+
+.body :deep(th),
+.body :deep(td) {
+  border: 1px solid var(--border);
+  padding: 4px 8px;
+  text-align: left;
+}
+
+.body :deep(th) {
+  background: var(--panel-2);
+  font-weight: 600;
+}
+
+.body :deep(del) {
+  color: var(--text-faint);
 }
 
 .empty-body {

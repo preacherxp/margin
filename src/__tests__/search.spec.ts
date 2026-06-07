@@ -6,6 +6,7 @@ import {
   deindexPost,
   searchPosts,
   highlight,
+  postToIndexed,
 } from '@/lib/search'
 import { SAMPLE_POSTS } from '@/lib/mock-data'
 
@@ -57,10 +58,10 @@ describe('search index', () => {
     const index = createPostIndex()
     const original = posts()[0]
     if (!original) throw new Error('expected sample posts')
-    indexPost(index, original)
+    indexPost(index, postToIndexed(original))
     expect(searchPosts(index, 'completely').length).toBe(0)
-    const edited: typeof original = { ...original, title: 'completely different title' }
-    indexPost(index, edited)
+    const edited = { ...original, title: 'completely different title' }
+    indexPost(index, postToIndexed(edited))
     expect(searchPosts(index, 'completely').length).toBe(1)
     deindexPost(index, edited.id)
     expect(searchPosts(index, 'completely').length).toBe(0)

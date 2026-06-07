@@ -27,12 +27,7 @@ withDefaults(
 <style scoped>
 .skeleton {
   display: inline-block;
-  background: linear-gradient(
-    90deg,
-    var(--panel-2) 0%,
-    var(--border) 50%,
-    var(--panel-2) 100%
-  );
+  background: linear-gradient(90deg, var(--panel-2) 0%, var(--border) 50%, var(--panel-2) 100%);
   background-size: 200% 100%;
   animation: shimmer 1.4s linear infinite;
   vertical-align: middle;

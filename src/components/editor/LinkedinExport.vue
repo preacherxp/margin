@@ -144,11 +144,7 @@ function selectAll() {
           <div class="bar" :data-tone="fillTone" data-testid="linkedin-export-bar">
             <div class="bar-fill" :style="{ width: fillPct + '%' }" />
           </div>
-          <span
-            class="count"
-            :data-tone="fillTone"
-            data-testid="linkedin-export-count"
-          >
+          <span class="count" :data-tone="fillTone" data-testid="linkedin-export-count">
             {{ output.chars }} chars · {{ output.words }} words
           </span>
           <span v-if="output.overLimit" class="warn-text" data-testid="linkedin-export-overlimit">

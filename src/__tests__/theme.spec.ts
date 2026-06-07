@@ -56,6 +56,21 @@ describe('resolveTheme', () => {
     expect(resolveTheme('light')).toBe('light')
   })
 
+  it('returns sepia for "sepia"', () => {
+    installMatchMedia('light')
+    expect(resolveTheme('sepia')).toBe('sepia')
+  })
+
+  it('returns high-contrast for "high-contrast"', () => {
+    installMatchMedia('light')
+    expect(resolveTheme('high-contrast')).toBe('high-contrast')
+  })
+
+  it('returns nord for "nord"', () => {
+    installMatchMedia('light')
+    expect(resolveTheme('nord')).toBe('nord')
+  })
+
   it('returns light when system prefers light', () => {
     installMatchMedia('light')
     expect(resolveTheme('system')).toBe('light')
@@ -73,6 +88,22 @@ describe('applyTheme', () => {
     const detach = applyTheme('light')
     expect(document.documentElement.getAttribute('data-theme')).toBe('light')
     detach()
+  })
+
+  it('applies palette themes to <html>', () => {
+    installMatchMedia('dark')
+
+    const detachSepia = applyTheme('sepia')
+    expect(document.documentElement.getAttribute('data-theme')).toBe('sepia')
+    detachSepia()
+
+    const detachHC = applyTheme('high-contrast')
+    expect(document.documentElement.getAttribute('data-theme')).toBe('high-contrast')
+    detachHC()
+
+    const detachNord = applyTheme('nord')
+    expect(document.documentElement.getAttribute('data-theme')).toBe('nord')
+    detachNord()
   })
 
   it('does not subscribe to media changes for explicit choices', () => {

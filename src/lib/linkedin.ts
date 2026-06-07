@@ -162,9 +162,7 @@ function dedent(s: string): string {
     return Math.min(m, len)
   }, Infinity)
   if (!Number.isFinite(minIndent) || minIndent === 0) return s
-  return lines
-    .map((l) => (l.startsWith(' '.repeat(minIndent)) ? l.slice(minIndent) : l))
-    .join('\n')
+  return lines.map((l) => (l.startsWith(' '.repeat(minIndent)) ? l.slice(minIndent) : l)).join('\n')
 }
 
 export function buildLinkedinOutput(post: Post): LinkedinOutput {

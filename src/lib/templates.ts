@@ -4,10 +4,11 @@ import type { LinkedinMeta, PostType, Template, TemplateMeta } from '@/types/pos
 const DELIM = '---'
 const EMPTY_LINKEDIN: LinkedinMeta = { hook: '', cta: '', hashtags: [], audience: '' }
 
-const BUILT_IN_RAW: Record<string, string> = import.meta.glob(
-  '/src/templates/*.md',
-  { query: '?raw', import: 'default', eager: true },
-)
+const BUILT_IN_RAW: Record<string, string> = import.meta.glob('/src/templates/*.md', {
+  query: '?raw',
+  import: 'default',
+  eager: true,
+})
 
 export const BUILT_IN_TEMPLATE_SLUGS = [
   'linkedin-story',
@@ -35,7 +36,7 @@ function normalizeType(v: unknown): PostType {
 function slugFromPath(path: string | null | undefined): string {
   if (!path) return ''
   const m = path.match(/([^/]+)\.md$/)
-  return m ? m[1] ?? '' : ''
+  return m ? (m[1] ?? '') : ''
 }
 
 export interface ParseTemplateResult {
